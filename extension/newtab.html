@@ -31,6 +31,18 @@
   </section>
   <section class="bookmark-manager" id="bookmarkManager" aria-label="书签管理" hidden><div class="manager-copy"><strong>书签管理</strong><span id="managerCount"></span></div><div class="manager-actions"><button type="button" id="managerAddBookmark">添加书签</button><button type="button" class="manager-done" id="managerDone">完成</button></div></section>
   <section class="bookmark-grid" id="bookmarkGrid" aria-label="我的书签"></section>
+  <section class="system-settings-page" id="systemSettingsPage" aria-labelledby="systemSettingsTitle" hidden>
+    <header class="system-settings-heading">
+      <div><span class="system-settings-kicker">岁瞬 · 管理中心</span><h1 id="systemSettingsTitle">系统设置</h1><p>管理书签、分类和主页外观，让常用内容保持井然有序。</p></div>
+    </header>
+    <div class="system-settings-grid" aria-label="系统设置功能">
+      <button type="button" class="system-action-card" data-system-action="add-tag"><span class="system-card-icon icon-tag" aria-hidden="true">＋</span><span class="system-card-copy"><strong>添加标签</strong><small>新建分类文件夹，为书签建立清晰的归属。</small></span><span class="system-card-arrow" aria-hidden="true">↗</span></button>
+      <button type="button" class="system-action-card" data-system-action="batch-edit"><span class="system-card-icon icon-batch" aria-hidden="true">☷</span><span class="system-card-copy"><strong>批量编辑</strong><small>在同一处快速修改多条书签的名称、网址和分类。</small></span><span class="system-card-arrow" aria-hidden="true">↗</span></button>
+      <button type="button" class="system-action-card" data-system-action="background"><span class="system-card-icon icon-background" aria-hidden="true">◈</span><span class="system-card-copy"><strong>背景设置</strong><small>更换主页壁纸，细调背景模糊与遮罩效果。</small></span><span class="system-card-arrow" aria-hidden="true">↗</span></button>
+      <button type="button" class="system-action-card" data-system-action="bookmarks"><span class="system-card-icon icon-bookmarks" aria-hidden="true">▤</span><span class="system-card-copy"><strong>书签管理</strong><small>查看并整理全部书签，支持添加、编辑和移动。</small></span><span class="system-card-arrow" aria-hidden="true">↗</span></button>
+    </div>
+    <p class="system-settings-footnote">书签、分类与偏好仍保存在当前浏览器中；侧栏「添加」按钮可随时新建文件夹。</p>
+  </section>
 </main>
 <div class="dock" aria-label="Dock 书签"><div class="dock-bookmarks" id="dockBookmarks" aria-label="Dock 书签"></div></div>
 <div class="chrome-foot"><a href="https://liukuan.cc/" target="_blank" rel="noopener">岁瞬网页书签</a><span> · 浏览器扩展版</span></div>
