@@ -1,0 +1,56 @@
+# 子幽网页书签 · 星云主页
+
+一个无需构建步骤的静态个人书签主页。页面打开后即可搜索、整理常用网站，并可自定义背景和时钟显示。
+
+## 使用方法
+
+### 打开主页
+
+部署后访问 Cloudflare Pages 提供的 `*.pages.dev` 地址，也可以绑定自己的域名。若暂时不部署，可在项目目录启动本地预览：
+
+```bash
+python3 -m http.server 8000
+```
+
+然后访问 <http://localhost:8000>。也可以直接打开 `index.html`；本地 HTTP 预览通常更稳定。
+
+这是一个网页，不是浏览器扩展。可以把主页地址加入浏览器书签，或在浏览器设置中设为启动页；是否能替换新标签页取决于浏览器自身支持。
+
+### 添加和整理书签
+
+- 点击页面上的「添加」，填写名称、网址、分类和图标后保存。
+- 左侧分类栏用于切换文件夹。打开「系统设置」中的文件夹/标签管理，可以新增分类并设置名称与图标；添加书签时也可选择所属分类。
+- 在某个书签上打开右键菜单，可新标签页打开、编辑、移动分类、添加或移出 Dock 栏、调整布局，或删除书签。
+- 使用搜索框搜索网页或输入网址；默认搜索服务可在「系统设置 → 常规设置」中选择 Bing、Google、百度或 DuckDuckGo。
+
+### 背景、设置与数据备份
+
+「背景设置」可以更换壁纸并调整模糊和遮罩。「时间日期」可设置 12/24 小时制和是否显示秒数。设置中的数据页提供 JSON 导出和导入，可用于备份或迁移书签及偏好。
+
+**数据保存在当前浏览器本地，不会自动同步到其他浏览器或设备。** 更换浏览器、清除该站点的浏览器数据或换设备前，请先导出 JSON 备份。背景图片也只保存在当前浏览器中。网页链接本身不会包含个人书签数据；使用同一公开网址的其他人会在自己的浏览器中拥有各自独立的数据。
+
+## 部署到 Cloudflare Pages（连接 GitHub，推荐）
+
+本仓库根目录含有 `index.html`，不需要框架或打包步骤。Cloudflare 官方静态 HTML 指南：[Deploy a static HTML site](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/)；Git 连接说明：[Git integration](https://developers.cloudflare.com/pages/configuration/git-integration/)。
+
+1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/) 并打开 **Workers & Pages**。
+2. 选择 **Create application → Pages → Import an existing Git repository**，按提示连接 GitHub，并选择 `sincalaway/nova`。
+3. 构建设置填写：
+
+   | 设置 | 值 |
+   | --- | --- |
+   | Production branch（生产分支） | `main` |
+   | Framework preset（框架预设） | `None` / 无 |
+   | Build command（构建命令） | `exit 0` |
+   | Build output directory（输出目录） | `.` |
+
+4. 开始部署。完成后，Cloudflare 会提供 `项目名.pages.dev` 网址；可在 Pages 项目设置中绑定自定义域名。
+5. 仓库 `main` 分支后续每次推送都会触发自动部署；提交到其他分支或 PR 可用于预览（依 Pages 项目配置而定）。
+
+> **注意：** Pages 的 Git 集成和 Direct Upload 是不同的项目创建方式。Cloudflare 文档说明，使用 Git 集成后不能再把同一 Pages 项目切换为 Direct Upload；本仓库推荐保持 Git 集成。
+
+## 文件说明
+
+- `index.html`：完整主页（HTML、样式与交互逻辑）。
+- `galaxy.jpg`：星空背景图。
+- `logo.svg`、`logo.png`：项目标识资源。
