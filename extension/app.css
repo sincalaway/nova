@@ -78,7 +78,7 @@
 @media(max-width:560px){:root{--rail:64px;--tile-size:43px}.rail{padding-top:8px}.rail-brand{height:56px}.rail-brand img{width:37px;height:37px;border-radius:13px}.rail-links{padding:0 4px;gap:3px}.rail-link,.rail-bottom button{min-height:49px;border-radius:10px;font-size:9px;gap:3px}.rail-link svg,.rail-bottom svg{width:20px;height:20px}.rail-emoji{font-size:18px;line-height:20px}.rail-bottom{padding:0 4px}.workspace{padding:15px 8px 54px}.top-toolbar{width:100%;min-height:67px;gap:0;margin:0 auto 6px}.tool-item{width:calc(100% / 7);gap:5px;font-size:8px;letter-spacing:-.2px}.tool-icon{width:39px;height:39px;border-radius:12px}.tool-icon svg{width:25px;height:25px}.tool-plus svg{width:27px;height:27px}.calendar-mark b{font-size:9px}.calendar-mark strong{font-size:14px}.hero{margin-top:5px}.bookmark-grid{margin-top:18px;max-height:calc(100vh - 320px)}.category-overlay{padding:74px 12px 16px;justify-content:center}.category-card{width:min(280px,calc(100vw - 32px))}.utility-card{padding:16px}.bulk-editor{min-height:220px}}
 
 
-/* System-settings secondary menu and right-click sidebar folders */
+/* Sidebar system-settings folder and independent nested actions */
 .top-toolbar{display:none!important}
 .rail-category-wrap{position:relative;width:100%}
 .rail-category-wrap>.rail-link{width:100%}
@@ -95,6 +95,22 @@
 .category-chip button:hover{background:#d4e7fa;color:#236fb3}
 @media(max-width:560px){.shortcut-grid{grid-template-columns:1fr;gap:7px}.shortcut-card{padding:10px}.shortcut-card p{min-height:0;margin-bottom:7px}.shortcut-card .small-btn{padding:7px 8px}}
 
+
+
+.date-line[role="button"]{cursor:pointer}.date-line[role="button"]:focus-visible{outline:1px solid rgba(223,237,255,.75);outline-offset:4px;border-radius:3px}
+.rail-system-folder{width:100%;margin-top:5px}
+.rail-system-trigger{position:relative;width:100%}
+.rail-system-trigger .rail-caret{position:absolute;right:7px;top:9px;font-size:15px;line-height:1;color:rgba(223,237,255,.72);transform:rotate(-90deg);transition:transform .16s}
+.rail-system-folder.expanded .rail-caret{transform:rotate(0deg)}
+.rail-system-trigger[aria-expanded="true"]{background:rgba(129,181,235,.1);color:#fff}
+.rail-system-items{display:flex;flex-direction:column;gap:3px;margin:4px 0 5px 7px;padding-left:5px;border-left:1px solid rgba(186,217,249,.26)}
+.rail-system-items[hidden]{display:none}
+.rail-sub-link{width:100%;min-height:36px;padding:6px 3px;border:0;border-radius:7px;background:transparent;color:rgba(234,243,255,.8);display:flex;align-items:center;justify-content:flex-start;gap:4px;text-align:left;font-size:10px;line-height:1.4;white-space:nowrap;transition:background .16s,color .16s}
+.rail-sub-link svg{width:14px;height:14px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.rail-sub-link:hover,.rail-sub-link:focus-visible{background:rgba(129,181,235,.18);color:#fff;outline:0}
+.rail-system-trigger:focus-visible{outline:2px solid rgba(186,217,249,.8);outline-offset:-2px}
+@media(max-width:900px){.rail-system-items{margin-left:4px;padding-left:3px}.rail-sub-link{font-size:9px;gap:3px;padding-left:2px;padding-right:1px}.rail-sub-link svg{width:12px;height:12px}.rail-system-trigger .rail-caret{right:5px;top:8px}}
+@media(max-width:560px){.rail-system-items{margin-left:4px;padding-left:3px;gap:2px}.rail-sub-link{min-height:43px;flex-direction:column;justify-content:center;gap:3px;font-size:9px;padding:5px 1px}.rail-system-trigger .rail-caret{right:4px;font-size:13px}}
 
 /* Bookmark right-click menu, per-item layouts, and pinned-bookmark Dock */
 .bookmark-grid{grid-auto-rows:76px}
@@ -134,3 +150,15 @@
 .dock-bookmark .fallback{font-size:13px}
 @media(max-width:900px){.bookmark-grid{grid-auto-rows:72px}}
 @media(max-width:560px){.bookmark-grid{grid-auto-rows:67px}.bookmark-context-menu{width:182px}.bookmark-submenu{width:136px}.dock{bottom:31px;max-width:calc(100vw - var(--rail) - 10px)}.dock-bookmark{width:36px;height:36px}.dock-bookmark .favicon{width:31px;height:31px}}
+
+
+/* Keep the system folder visible while only bookmark categories scroll. */
+.rail-links{flex:1;min-height:0;overflow:hidden}
+.rail-links>[data-cat],.rail-system-folder,.rail-category-wrap{flex:none}
+.rail-category-list{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:5px;scrollbar-width:thin;scrollbar-color:rgba(194,218,244,.3) transparent}
+.bookmark-manager{width:min(1120px,100%);flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px auto 0;padding:11px 14px;border:1px solid rgba(218,235,255,.2);border-radius:12px;background:rgba(14,30,49,.58);backdrop-filter:blur(15px);color:#fff}
+.bookmark-manager[hidden]{display:none}
+.manager-copy{display:flex;align-items:center;gap:12px;min-width:0}.manager-copy strong{font-size:13px;font-weight:600}.manager-copy span{font-size:11px;color:rgba(234,243,255,.7)}
+.manager-actions{display:flex;gap:7px;flex:none}.manager-actions button{padding:7px 12px;border:1px solid rgba(226,239,255,.24);border-radius:7px;background:rgba(129,184,241,.23);color:#fff;font-size:11px}.manager-actions button:hover{background:rgba(129,184,241,.4)}.manager-actions .manager-done{background:transparent}
+.bookmark-manager:not([hidden])+.bookmark-grid{margin-top:12px;max-height:calc(100vh - 330px)}
+@media(max-width:560px){.rail-category-list{gap:3px}.bookmark-manager{padding:9px;gap:7px;flex-wrap:wrap}.manager-copy{gap:8px}.manager-copy strong{font-size:11px}.manager-copy span{font-size:9px}.manager-actions{margin-left:auto}.manager-actions button{font-size:10px;padding:6px 8px}.bookmark-manager:not([hidden])+.bookmark-grid{max-height:calc(100vh - 335px)}}
