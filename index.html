@@ -344,6 +344,25 @@
   .category-filter .rail-icon{width:22px;height:22px}
   .category-filter-row:not([hidden])+.bookmark-grid{margin-top:12px}
 }
+/* Match the reference's quiet, icon-over-label vertical sidebar. */
+:root{--rail:84px}
+.rail{padding:8px 0 10px;background:linear-gradient(180deg,rgba(22,34,47,.94),rgba(28,49,64,.96))}
+.rail-brand{display:none}
+.rail-links{flex:1 1 auto;min-height:0;overflow:hidden;padding:0;gap:0}
+.rail-links>.rail-link{flex:none}
+.rail-category-list{display:flex;flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;flex-direction:column;gap:0;padding:0;scrollbar-width:thin}
+.rail-category-list>.rail-link{flex:none}
+.rail-link,.rail-bottom button{min-height:77px!important;border-radius:0!important;gap:4px!important;font-size:14px!important;font-weight:500}
+.rail .rail-icon{width:35px;height:35px;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+.rail .rail-icon svg{width:29px!important;height:29px!important;stroke-width:1.7!important}
+.rail .rail-emoji{font-size:23px!important;line-height:1}
+.rail-link.active{border-left:0!important;background:rgba(255,255,255,.1)!important;box-shadow:none!important}
+.rail-link.active .rail-icon{box-shadow:none!important}
+.rail-link:hover,.rail-bottom button:hover{background:rgba(255,255,255,.075)!important;color:#fff}
+.rail-system-trigger{margin-top:0!important}
+.category-filter-row{display:none!important}
+@media(max-height:700px){.rail-link,.rail-bottom button{min-height:62px!important;font-size:12px!important}.rail .rail-icon{width:31px;height:31px}.rail .rail-icon svg{width:26px!important;height:26px!important}}
+@media(max-width:560px){:root{--rail:68px}.rail{padding:6px 0}.rail-link,.rail-bottom button{min-height:64px!important;font-size:11px!important}.rail .rail-icon{width:29px;height:29px}.rail .rail-icon svg{width:24px!important;height:24px!important}.rail .rail-emoji{font-size:20px!important}}
 </style>
 </head>
 <body>
@@ -438,15 +457,17 @@
 'use strict';
 const STORE='ziyou.replica.v1';const cloudConfig=window.BOOKMARK_SYNC_CONFIG||{};let cloudClient=null,syncUser=null,syncTimer=null,lastCloudUser='';
 const initial=[
- {name:'YouTube',url:'https://www.youtube.com',category:'影音',icon:'▶',tile:'#f7e4e5',tone:'#db2433'},
- {name:'Gmail',url:'https://mail.google.com',category:'邮件',icon:'M',tile:'#fff0ef',tone:'#d74435'},
+ {name:'YouTube',url:'https://www.youtube.com',category:'影音',icon:'▶',tile:'#f7e4e5',tone:'#db2433',home:true},
+ {name:'Gmail',url:'https://mail.google.com',category:'邮件',icon:'M',tile:'#fff0ef',tone:'#d74435',home:true},
+ {name:'语雀',url:'https://www.yuque.com',category:'工具',icon:'语',tile:'#eff5ff',tone:'#3c83ee',home:true},
+ {name:'Notion',url:'https://www.notion.so',category:'工具',icon:'N',tile:'#fafafa',tone:'#171717',home:true},
+ {name:'Grok',url:'https://grok.com',category:'AI',icon:'𝕏',tile:'#15191f',tone:'#fff',home:true},
+ {name:'ChatGPT',url:'https://chatgpt.com',category:'AI',icon:'✳',tile:'#e7f4ef',tone:'#19866a',home:true},
+ {name:'GitHub',url:'https://github.com',category:'开发',icon:'GH',tile:'#20252d',tone:'#fff',home:true},
+ {name:'Gemini',url:'https://gemini.google.com',category:'AI',icon:'✦',tile:'#eef0ff',tone:'#6681e9',home:true},
+ {name:'Hugging Face',url:'https://huggingface.co',category:'AI',icon:'🤗',tile:'#fff2d9',tone:'#e5a326',home:true},
  {name:'多邻国',url:'https://www.duolingo.com',category:'工具',icon:'D',tile:'#e8f5e8',tone:'#39a85b'},
- {name:'Gemini',url:'https://gemini.google.com',category:'AI',icon:'✦',tile:'#eef0ff',tone:'#6681e9'},
- {name:'Grok',url:'https://grok.com',category:'AI',icon:'𝕏',tile:'#15191f',tone:'#fff'},
  {name:'OneDrive',url:'https://onedrive.live.com',category:'工具',icon:'☁',tile:'#e8f3ff',tone:'#288de1'},
- {name:'Notion',url:'https://www.notion.so',category:'工具',icon:'N',tile:'#fafafa',tone:'#171717'},
- {name:'GitHub',url:'https://github.com',category:'开发',icon:'GH',tile:'#20252d',tone:'#fff'},
- {name:'ChatGPT',url:'https://chatgpt.com',category:'AI',icon:'✳',tile:'#e7f4ef',tone:'#19866a'},
  {name:'Google Drive',url:'https://drive.google.com',category:'工具',icon:'▲',tile:'#eff7e9',tone:'#4d9d59'},
  {name:'GitLab',url:'https://gitlab.com',category:'开发',icon:'G',tile:'#fff0e6',tone:'#e36a32'},
  {name:'Stack Overflow',url:'https://stackoverflow.com',category:'开发',icon:'S',tile:'#fff3e4',tone:'#df7937'},
@@ -461,8 +482,7 @@ const initial=[
  {name:'少数派',url:'https://sspai.com',category:'资讯',icon:'少',tile:'#ebf3fd',tone:'#377bb7'},
  {name:'豆瓣',url:'https://www.douban.com',category:'资讯',icon:'豆',tile:'#e7f5ee',tone:'#318c64'},
  {name:'百度',url:'https://www.baidu.com',category:'工具',icon:'百',tile:'#edf1ff',tone:'#315dbb'},
- {name:'Figma',url:'https://www.figma.com',category:'开发',icon:'F',tile:'#f9e9ea',tone:'#cf5559'},
- {name:'Eooce 导航',url:'https://nav.eooce.com/',category:'工具',icon:'E',tile:'#e6f5ff',tone:'#2878bb',home:true}
+ {name:'Figma',url:'https://www.figma.com',category:'开发',icon:'F',tile:'#f9e9ea',tone:'#cf5559'}
 ];
 const defaultCategories=[{name:'工具',icon:'🧰'},{name:'开发',icon:'⌘'},{name:'邮件',icon:'✉'},{name:'资讯',icon:'▤'},{name:'AI',icon:'✦'},{name:'影音',icon:'▶'}];
 const defaults={bookmarks:initial,categories:defaultCategories,note:'',todos:[],engine:'https://www.bing.com/search?q=',dark:false,blur:0,shade:34,wallpaper:'',showSeconds:true,hour24:true,iconSize:56};
@@ -472,21 +492,38 @@ const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&
 const host=u=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
 function save(skipCloud=false){try{localStorage.setItem(STORE,JSON.stringify(state));}catch{showToast('本地存储空间不足，请换一张较小的壁纸');}if(!skipCloud)scheduleCloudSync();}
 function restoreSitesToFolders(){
-  if(state.defaultSitesFolderMigrationV3)return;
-  if(!Array.isArray(state.categories))state.categories=defaultCategories.map(category=>({...category}));
-  if(!Array.isArray(state.bookmarks))state.bookmarks=[];
+  let changed=false;
+  if(!Array.isArray(state.categories)){state.categories=defaultCategories.map(category=>({...category}));changed=true;}
+  if(!Array.isArray(state.bookmarks)){state.bookmarks=[];changed=true;}
   const siteHost=value=>{try{return new URL(value).hostname.replace(/^www\./,'').toLowerCase();}catch{return '';}};
-  for(const site of initial){
-    const existing=state.bookmarks.find(bookmark=>bookmark&&siteHost(bookmark.url)===siteHost(site.url));
-    if(existing)continue;
-    if(!state.categories.some(item=>item&&item.name===site.category)){
-      const category=defaultCategories.find(item=>item.name===site.category);
-      state.categories.push(category?{...category}:{name:site.category,icon:'✦'});
+  const requestedHosts=new Set(['youtube.com','mail.google.com','yuque.com','notion.so','grok.com','chatgpt.com','github.com','gemini.google.com','huggingface.co']);
+  if(!state.defaultSitesFolderMigrationV4){
+    const sitesToRestore=state.defaultSitesFolderMigrationV3?initial.filter(site=>requestedHosts.has(siteHost(site.url))):initial;
+    for(const site of sitesToRestore){
+      const existing=state.bookmarks.find(bookmark=>bookmark&&siteHost(bookmark.url)===siteHost(site.url));
+      if(existing)continue;
+      if(!state.categories.some(item=>item&&item.name===site.category)){
+        const category=defaultCategories.find(item=>item.name===site.category);
+        state.categories.push(category?{...category}:{name:site.category,icon:'✦'});
+      }
+      state.bookmarks.push({...site,home:site.home===true});
+      changed=true;
     }
-    state.bookmarks.push({...site,home:site.home===true});
+    state.defaultSitesFolderMigrationV3=true;
+    state.defaultSitesFolderMigrationV4=true;
+    changed=true;
   }
-  state.defaultSitesFolderMigrationV3=true;
-  save();
+  if(!state.defaultHomepageMigrationV1){
+    for(const site of initial.filter(item=>requestedHosts.has(siteHost(item.url)))){
+      const existing=state.bookmarks.find(bookmark=>bookmark&&siteHost(bookmark.url)===siteHost(site.url));
+      if(existing&&!existing.home){existing.home=true;changed=true;}
+    }
+    state.defaultHomepageMigrationV1=true;
+    changed=true;
+  }
+  const remaining=state.bookmarks.filter(bookmark=>siteHost(bookmark?.url)!=='nav.eooce.com');
+  if(remaining.length!==state.bookmarks.length){state.bookmarks=remaining;changed=true;}
+  if(changed)save();
 }
 restoreSitesToFolders();
 function showToast(text){const el=$('#toast');el.textContent=text;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2200);}
@@ -530,7 +567,7 @@ function openSyncDialog(){updateSyncUI();$('#syncOverlay').classList.add('open')
 function closeSyncDialog(){$('#syncOverlay').classList.remove('open');}
 function initCloudSync(){if(!syncConfigured()){updateSyncUI();return;}cloudClient=window.supabase.createClient(cloudConfig.url,cloudConfig.anonKey);cloudClient.auth.onAuthStateChange((_event,session)=>{syncUser=session?.user||null;updateSyncUI();if(syncUser&&lastCloudUser!==syncUser.id){lastCloudUser=syncUser.id;setTimeout(()=>syncFromCloud(),0);}if(!syncUser)lastCloudUser='';});cloudClient.auth.getSession().then(({data})=>{syncUser=data?.session?.user||null;updateSyncUI();if(syncUser&&lastCloudUser!==syncUser.id){lastCloudUser=syncUser.id;syncFromCloud();}}).catch(()=>{syncUser=null;updateSyncUI();});}
 function scheduleCloudSync(){if(!cloudClient||!syncUser)return;clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncToCloud(false),800);}
-async function syncFromCloud(){if(!cloudClient||!syncUser)return;try{const {data,error}=await cloudClient.from('bookmark_sync').select('payload').eq('user_id',syncUser.id).maybeSingle();if(error)throw error;if(data?.payload){const remote=data.payload,local=state;state={...local,...remote};const key=b=>{try{return new URL(b.url).href.replace(/\/$/,'').toLowerCase();}catch{return String(b.url||'').toLowerCase();}};const bookmarks=new Map();for(const b of [...(remote.bookmarks||[]),...(local.bookmarks||[])])if(b&&b.url&&!bookmarks.has(key(b)))bookmarks.set(key(b),b);state.bookmarks=[...bookmarks.values()];const categories=new Map();for(const c of [...(remote.categories||[]),...(local.categories||[])])if(c?.name&&!categories.has(c.name))categories.set(c.name,c);state.categories=[...categories.values()];save(true);renderRail();renderBookmarks();renderDock();setWallpaper();applyIconSize();}await syncToCloud(false);updateSyncUI();}catch{ $('#syncStatus').textContent='同步失败：请检查 Supabase 表和安全策略设置。';showToast('云同步失败，请检查服务配置');}}
+async function syncFromCloud(){if(!cloudClient||!syncUser)return;try{const {data,error}=await cloudClient.from('bookmark_sync').select('payload').eq('user_id',syncUser.id).maybeSingle();if(error)throw error;if(data?.payload){const remote=data.payload,local=state;state={...local,...remote};const key=b=>{try{return new URL(b.url).href.replace(/\/$/,'').toLowerCase();}catch{return String(b.url||'').toLowerCase();}};const bookmarks=new Map();for(const b of [...(remote.bookmarks||[]),...(local.bookmarks||[])])if(b&&b.url&&!bookmarks.has(key(b)))bookmarks.set(key(b),b);state.bookmarks=[...bookmarks.values()].filter(bookmark=>host(bookmark.url).toLowerCase()!=='nav.eooce.com');const categories=new Map();for(const c of [...(remote.categories||[]),...(local.categories||[])])if(c?.name&&!categories.has(c.name))categories.set(c.name,c);state.categories=[...categories.values()];save(true);renderRail();renderBookmarks();renderDock();setWallpaper();applyIconSize();}await syncToCloud(false);updateSyncUI();}catch{ $('#syncStatus').textContent='同步失败：请检查 Supabase 表和安全策略设置。';showToast('云同步失败，请检查服务配置');}}
 async function syncToCloud(showMessage=false){if(!cloudClient||!syncUser){if(showMessage)showToast('请先配置并登录云同步');return;}try{const payload=JSON.parse(JSON.stringify(state));delete payload.wallpaper;const {error}=await cloudClient.from('bookmark_sync').upsert({user_id:syncUser.id,payload,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error)throw error;if(showMessage)showToast('书签已同步到云端');updateSyncUI();}catch{$('#syncStatus').textContent='同步失败：请在 Supabase 执行项目附带的 schema SQL。';showToast('同步失败，请检查云端数据表配置');}}
 async function handleSyncLogin(event){event.preventDefault();if(!cloudClient){showToast('请先配置云同步服务');return;}const email=$('#syncEmail').value.trim(),password=$('#syncPassword').value;$('#syncLogin').disabled=true;try{const {error}=await cloudClient.auth.signInWithPassword({email,password});if(error)throw error;showToast('登录成功，正在同步书签');}catch{$('#syncStatus').textContent='登录失败，请检查邮箱、密码或邮件验证状态。';showToast('登录失败，请检查账号信息');}finally{updateSyncUI();}}
 async function handleSyncSignup(){if(!cloudClient){showToast('请先配置云同步服务');return;}const email=$('#syncEmail').value.trim(),password=$('#syncPassword').value;if(!email||password.length<8){showToast('请填写有效邮箱和至少 8 位密码');return;}try{const {data,error}=await cloudClient.auth.signUp({email,password});if(error)throw error;if(data.session)showToast('账号创建成功，开始同步');else{$('#syncStatus').textContent='账号已创建，请先查收邮件完成验证，再回来登录。';showToast('验证邮件已发送');}}catch{$('#syncStatus').textContent='账号创建失败，请检查 Supabase 邮件验证设置。';showToast('账号创建失败');}}
@@ -544,13 +581,24 @@ function renderCategoryFilters(){
     button.addEventListener('contextmenu',event=>{event.preventDefault();event.stopPropagation();openCategoryContext(button.dataset.cat,event);});
   });
 }
+function categoryLabel(cat){return ({邮件:'邮箱',影音:'视频'})[cat.name]||cat.name;}
+function railCategoryIcon(cat){const names={工具:'tools',开发:'code',邮件:'mail',邮箱:'mail',资讯:'news',AI:'ai',影音:'video',视频:'video'},name=names[cat.name],icon=name?svg[name]:'';return `<span class="rail-icon ${name?'rail-icon-'+name:'rail-icon-custom'}">${icon||`<span class="rail-emoji">${esc(cat.icon||'✦')}</span>`}</span>`;}
 function renderRail(){
   const box=$('#railLinks');
   const home=`<button type="button" class="rail-link ${activeCategory==='全部'&&!systemSettingsMode?'active':''}" data-cat="全部" title="我的首页书签"><span class="rail-icon rail-icon-home">${svg.home}</span><span>首页</span></button>`;
-  const system=`<button type="button" class="rail-link rail-system-trigger ${systemSettingsMode?'active':''}" data-system-page="true" title="系统设置" aria-label="系统设置"><span class="rail-icon rail-icon-settings">${svg.settings}</span><span>系统设置</span></button>`;
-  box.innerHTML=home+system;
+  const categoryButton=cat=>`<button type="button" class="rail-link rail-category-link ${activeCategory===cat.name&&!systemSettingsMode?'active':''}" data-cat="${esc(cat.name)}" title="${esc(categoryLabel(cat))}">${railCategoryIcon(cat)}<span>${esc(categoryLabel(cat))}</span></button>`;
+  const categories=Array.isArray(state.categories)?state.categories:[];
+  const development=categories.find(cat=>cat.name==='开发');
+  const order=new Map(['邮件','邮箱','资讯','AI','影音','视频','工具'].map((name,index)=>[name,index]));
+  const remaining=categories.filter(cat=>cat!==development).slice().sort((a,b)=>(order.get(a.name)??999)-(order.get(b.name)??999)||a.name.localeCompare(b.name,'zh-CN'));
+  const system=`<button type="button" class="rail-link rail-system-trigger ${systemSettingsMode?'active':''}" data-system-page="true" title="系统设置" aria-label="系统设置"><span class="rail-icon rail-icon-system">${svg.system}</span><span>系统设置</span></button>`;
+  box.innerHTML=home+(development?categoryButton(development):'')+system+`<div class="rail-category-list" aria-label="书签分类">${remaining.map(categoryButton).join('')}</div>`;
   const homeDrop=box.querySelector('[data-cat="全部"]');homeDrop.addEventListener('dragover',allowHomeDrop);homeDrop.addEventListener('drop',handleHomeDrop);
   homeDrop.addEventListener('click',()=>{activeCategory='全部';systemSettingsMode=false;managerMode=false;renderRail();renderBookmarks();});
+  box.querySelectorAll('.rail-category-link').forEach(button=>{
+    button.addEventListener('click',()=>{activeCategory=button.dataset.cat;systemSettingsMode=false;managerMode=false;renderRail();renderBookmarks();});
+    button.addEventListener('contextmenu',event=>{event.preventDefault();event.stopPropagation();openCategoryContext(button.dataset.cat,event);});
+  });
   renderCategoryFilters();
   box.querySelector('[data-system-page]').addEventListener('click',()=>{systemSettingsMode=true;managerMode=false;closeCategoryContext();closeBookmarkContext();renderRail();renderBookmarks();});
 }
