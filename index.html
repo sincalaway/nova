@@ -359,7 +359,8 @@
 .rail-link.active{border-left:0!important;background:rgba(255,255,255,.1)!important;box-shadow:none!important}
 .rail-link.active .rail-icon{box-shadow:none!important}
 .rail-link:hover,.rail-bottom button:hover{background:rgba(255,255,255,.075)!important;color:#fff}
-.rail-system-trigger{margin-top:0!important}
+.rail-system-trigger{flex:none;margin-top:0!important}
+.home-logo{display:block;flex:none;width:58px;height:58px;object-fit:cover;border-radius:50%;margin:0 auto 10px;border:1px solid rgba(255,255,255,.4);box-shadow:0 5px 16px rgba(0,0,0,.28)}
 .category-filter-row{display:none!important}
 @media(max-height:700px){.rail-link,.rail-bottom button{min-height:62px!important;font-size:12px!important}.rail .rail-icon{width:31px;height:31px}.rail .rail-icon svg{width:26px!important;height:26px!important}}
 @media(max-width:560px){:root{--rail:68px}.rail{padding:6px 0}.rail-link,.rail-bottom button{min-height:64px!important;font-size:11px!important}.rail .rail-icon{width:29px;height:29px}.rail .rail-icon svg{width:24px!important;height:24px!important}.rail .rail-emoji{font-size:20px!important}}
@@ -379,6 +380,7 @@
     <button id="railSettings" class="top-action" type="button" title="偏好设置" aria-label="偏好设置"><span class="rail-icon rail-icon-settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06-1.7 2.94-.09-.02a1.7 1.7 0 0 0-1.72.6l-.05.07h-3.4l-.04-.09a1.7 1.7 0 0 0-1.5-1.04 1.7 1.7 0 0 0-.76.18l-.08.04-2.94-1.7.02-.09a1.7 1.7 0 0 0-.6-1.72l-.07-.05v-3.4l.09-.04a1.7 1.7 0 0 0 1.04-1.5 1.7 1.7 0 0 0-.18-.76l-.04-.08 1.7-2.94.09.02a1.7 1.7 0 0 0 1.72-.6l.05-.07h3.4l.04.09a1.7 1.7 0 0 0 1.5 1.04 1.7 1.7 0 0 0 .76-.18l.08-.04 2.94 1.7-.02.09a1.7 1.7 0 0 0 .6 1.72l.07.05v3.4z"/></svg></span><span>偏好</span></button>
   </div>
   <section class="hero" aria-label="时间和搜索">
+    <img class="home-logo" src="logo.png" alt="岁瞬" onerror="this.style.display='none'">
     <div class="clock" id="clock">19:12:49</div>
     <div class="date-line" id="dateLine" role="button" tabindex="0" title="打开日历" aria-label="打开日历"></div>
     <form class="search-shell" id="searchForm">
@@ -592,7 +594,7 @@ function renderRail(){
   const order=new Map(['邮件','邮箱','资讯','AI','影音','视频','工具'].map((name,index)=>[name,index]));
   const remaining=categories.filter(cat=>cat!==development).slice().sort((a,b)=>(order.get(a.name)??999)-(order.get(b.name)??999)||a.name.localeCompare(b.name,'zh-CN'));
   const system=`<button type="button" class="rail-link rail-system-trigger ${systemSettingsMode?'active':''}" data-system-page="true" title="系统设置" aria-label="系统设置"><span class="rail-icon rail-icon-system">${svg.system}</span><span>系统设置</span></button>`;
-  box.innerHTML=home+(development?categoryButton(development):'')+system+`<div class="rail-category-list" aria-label="书签分类">${remaining.map(categoryButton).join('')}</div>`;
+  box.innerHTML=home+(development?categoryButton(development):'')+`<div class="rail-category-list" aria-label="书签分类">${remaining.map(categoryButton).join('')}</div>`+system;
   const homeDrop=box.querySelector('[data-cat="全部"]');homeDrop.addEventListener('dragover',allowHomeDrop);homeDrop.addEventListener('drop',handleHomeDrop);
   homeDrop.addEventListener('click',()=>{activeCategory='全部';systemSettingsMode=false;managerMode=false;renderRail();renderBookmarks();});
   box.querySelectorAll('.rail-category-link').forEach(button=>{
