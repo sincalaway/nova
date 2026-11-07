@@ -226,3 +226,6 @@
 .bookmark[data-layout="2x2"] .favicon{width:64px;height:64px}
 .bookmark[data-layout="2x4"] .favicon{width:78px;height:78px}
 }
+
+/* Explicit homepage collection: add and drag without aggregating categories. */
+.home-add-bookmark{min-height:76px;border:1px dashed rgba(220,238,255,.32);border-radius:12px;background:rgba(17,36,56,.28);color:rgba(239,248,255,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:26px;cursor:pointer}.home-add-bookmark span{font-size:11px}.home-add-bookmark:hover{background:rgba(57,100,142,.32)}.empty-state .home-add-bookmark{font-size:14px;min-height:46px;padding:10px 22px;margin:20px auto}.empty-state p{line-height:1.8}.bookmark[draggable=true]{cursor:grab}
