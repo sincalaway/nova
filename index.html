@@ -304,20 +304,61 @@
   .bookmark[data-layout] .favicon{width:min(var(--icon-size),100%);height:auto;aspect-ratio:1;flex:none}
 }
 </style>
+
+<style>
+/* Cleaner navigation: categories live beside the content; frequent actions live in a compact top bar. */
+.rail-links{flex:0 0 auto;width:100%;overflow:visible;padding:0 7px;gap:8px}
+.rail-links>.rail-link{flex:none}
+.rail-system-trigger{margin-top:3px}
+.top-actions{position:relative;inset:auto;align-self:stretch;width:min(1120px,100%);min-height:39px;display:flex;align-items:center;justify-content:flex-end;gap:8px;margin:0 auto 4px;z-index:3}
+.top-action{display:flex;align-items:center;gap:8px;min-height:39px;padding:4px 11px 4px 6px;border:1px solid rgba(225,239,255,.18);border-radius:12px;background:rgba(13,29,47,.58);backdrop-filter:blur(14px);color:rgba(247,251,255,.95);font-size:11px;font-weight:550;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.12);transition:background .16s,border-color .16s,transform .16s}
+.top-action:hover{background:rgba(42,69,97,.72);border-color:rgba(205,231,255,.34);transform:translateY(-1px)}
+.top-action .rail-icon{width:28px;height:28px;border-radius:9px}
+.top-action .rail-icon svg{width:16px!important;height:16px!important}
+.category-filter-row{width:min(1120px,100%);display:flex;align-items:center;gap:13px;margin:18px auto 0;min-height:43px;flex:none}
+.category-filter-row[hidden]{display:none!important}
+.category-filter-heading{flex:none;display:flex;flex-direction:column;gap:2px;min-width:48px;color:rgba(245,250,255,.94)}
+.category-filter-heading strong{font-size:12px;font-weight:650;letter-spacing:.04em}
+.category-filter-heading span{font-size:9px;color:rgba(227,239,252,.58)}
+.category-filter-list{min-width:0;flex:1;display:flex;align-items:center;gap:7px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 5px;scrollbar-width:thin;scrollbar-color:rgba(194,218,244,.28) transparent}
+.category-filter-list::-webkit-scrollbar{height:3px}.category-filter-list::-webkit-scrollbar-thumb{border-radius:8px;background:rgba(194,218,244,.32)}
+.category-filter{flex:none;min-height:35px;display:inline-flex;align-items:center;gap:7px;padding:4px 11px 4px 6px;border:1px solid rgba(230,241,255,.16);border-radius:11px;background:rgba(15,32,51,.42);color:rgba(242,248,255,.88);font-size:11px;transition:background .16s,border-color .16s,transform .16s,box-shadow .16s}
+.category-filter:hover{transform:translateY(-1px);background:rgba(41,69,98,.58);border-color:rgba(215,235,255,.3)}
+.category-filter.active{background:linear-gradient(135deg,rgba(67,151,220,.34),rgba(108,102,197,.25));border-color:rgba(171,215,250,.43);color:#fff;box-shadow:0 4px 12px rgba(3,12,24,.16),inset 0 1px 0 rgba(255,255,255,.08)}
+.category-filter .rail-icon{width:23px;height:23px;border-radius:7px;box-shadow:0 2px 6px rgba(0,0,0,.17),inset 0 1px 0 rgba(255,255,255,.24)}
+.category-filter .rail-icon svg{width:14px!important;height:14px!important}
+.category-filter .rail-emoji{font-size:13px}
+.category-filter-row:not([hidden])+.bookmark-grid{margin-top:15px}
+@media(max-width:900px){.category-filter-row{margin-top:14px;gap:9px}.category-filter{padding-right:9px}.top-actions{gap:6px}}
+@media(max-width:560px){
+  .workspace{padding-top:10px}
+  .top-actions{min-height:34px;margin-bottom:4px;gap:5px}
+  .top-action{min-height:34px;padding:3px;border-radius:10px}
+  .top-action>span:not(.rail-icon){display:none}
+  .top-action .rail-icon{width:27px;height:27px}
+  .category-filter-row{min-height:38px;margin-top:12px;gap:0}
+  .category-filter-heading{display:none}
+  .category-filter-list{gap:6px;padding-left:1px;padding-right:1px;scrollbar-width:none}
+  .category-filter-list::-webkit-scrollbar{display:none}
+  .category-filter{min-height:32px;padding:3px 9px 3px 5px;font-size:10px;border-radius:10px}
+  .category-filter .rail-icon{width:22px;height:22px}
+  .category-filter-row:not([hidden])+.bookmark-grid{margin-top:12px}
+}
+</style>
 </head>
 <body>
 <div id="wallpaper" aria-hidden="true"></div><div id="shade" aria-hidden="true"></div>
 <aside class="rail" aria-label="主导航">
   <a class="rail-brand" href="#home" title="岁瞬网页书签主页"><img src="logo.png" alt="岁瞬" onerror="this.style.display='none'"></a>
   <nav class="rail-links" id="railLinks"></nav>
-  <div class="rail-bottom">
-    <button id="railAccount" type="button" title="登录并同步书签" aria-label="登录并同步书签"><span class="rail-icon rail-icon-sync"><svg viewBox="0 0 24 24"><path d="M7.2 18.5H6a4 4 0 1 1 .6-7.95A5.7 5.7 0 0 1 17.3 9a4.8 4.8 0 0 1 .7 9.5h-1.2"/><path d="M12 12v9m-3-3 3 3 3-3"/></svg></span><span id="syncRailLabel">云同步</span></button>
-    <button id="railAdd" type="button" title="添加文件夹" aria-label="添加文件夹"><span class="rail-icon rail-icon-add"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span>添加</span></button>
-    <div class="rail-divider"></div>
-    <button id="railSettings" type="button" title="偏好设置" aria-label="偏好设置"><span class="rail-icon rail-icon-settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06-1.7 2.94-.09-.02a1.7 1.7 0 0 0-1.72.6l-.05.07h-3.4l-.04-.09a1.7 1.7 0 0 0-1.5-1.04 1.7 1.7 0 0 0-.76.18l-.08.04-2.94-1.7.02-.09a1.7 1.7 0 0 0-.6-1.72l-.07-.05v-3.4l.09-.04a1.7 1.7 0 0 0 1.04-1.5 1.7 1.7 0 0 0-.18-.76l-.04-.08 1.7-2.94.09.02a1.7 1.7 0 0 0 1.72-.6l.05-.07h3.4l.04.09a1.7 1.7 0 0 0 1.5 1.04 1.7 1.7 0 0 0 .76-.18l.08-.04 2.94 1.7-.02.09a1.7 1.7 0 0 0 .6 1.72l.07.05v3.4z"/></svg></span><span>偏好</span></button>
-  </div>
 </aside>
 <main class="workspace" id="home">
+    <div class="top-actions" aria-label="快捷操作">
+    <button id="railAccount" class="top-action" type="button" title="登录并同步书签" aria-label="登录并同步书签"><span class="rail-icon rail-icon-sync"><svg viewBox="0 0 24 24"><path d="M7.2 18.5H6a4 4 0 1 1 .6-7.95A5.7 5.7 0 0 1 17.3 9a4.8 4.8 0 0 1 .7 9.5h-1.2"/><path d="M12 12v9m-3-3 3 3 3-3"/></svg></span><span id="syncRailLabel">云同步</span></button>
+    <button id="railAdd" class="top-action" type="button" title="添加文件夹" aria-label="添加文件夹"><span class="rail-icon rail-icon-add"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span>添加</span></button>
+
+    <button id="railSettings" class="top-action" type="button" title="偏好设置" aria-label="偏好设置"><span class="rail-icon rail-icon-settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06-1.7 2.94-.09-.02a1.7 1.7 0 0 0-1.72.6l-.05.07h-3.4l-.04-.09a1.7 1.7 0 0 0-1.5-1.04 1.7 1.7 0 0 0-.76.18l-.08.04-2.94-1.7.02-.09a1.7 1.7 0 0 0-.6-1.72l-.07-.05v-3.4l.09-.04a1.7 1.7 0 0 0 1.04-1.5 1.7 1.7 0 0 0-.18-.76l-.04-.08 1.7-2.94.09.02a1.7 1.7 0 0 0 1.72-.6l.05-.07h3.4l.04.09a1.7 1.7 0 0 0 1.5 1.04 1.7 1.7 0 0 0 .76-.18l.08-.04 2.94 1.7-.02.09a1.7 1.7 0 0 0 .6 1.72l.07.05v3.4z"/></svg></span><span>偏好</span></button>
+  </div>
   <section class="hero" aria-label="时间和搜索">
     <div class="clock" id="clock">19:12:49</div>
     <div class="date-line" id="dateLine" role="button" tabindex="0" title="打开日历" aria-label="打开日历"></div>
@@ -328,6 +369,7 @@
     </form>
   </section>
   <section class="bookmark-manager" id="bookmarkManager" aria-label="书签管理" hidden><div class="manager-copy"><strong>书签管理</strong><span id="managerCount"></span></div><div class="manager-actions"><button type="button" id="managerAddBookmark">添加书签</button><button type="button" class="manager-done" id="managerDone">完成</button></div></section>
+  <section class="category-filter-row" id="categoryFilters" aria-label="书签分类筛选"></section>
   <section class="bookmark-grid" id="bookmarkGrid" aria-label="我的书签"></section>
   <section class="system-settings-page" id="systemSettingsPage" aria-labelledby="systemSettingsTitle" hidden>
     <header class="system-settings-heading">
@@ -494,16 +536,23 @@ async function handleSyncLogin(event){event.preventDefault();if(!cloudClient){sh
 async function handleSyncSignup(){if(!cloudClient){showToast('请先配置云同步服务');return;}const email=$('#syncEmail').value.trim(),password=$('#syncPassword').value;if(!email||password.length<8){showToast('请填写有效邮箱和至少 8 位密码');return;}try{const {data,error}=await cloudClient.auth.signUp({email,password});if(error)throw error;if(data.session)showToast('账号创建成功，开始同步');else{$('#syncStatus').textContent='账号已创建，请先查收邮件完成验证，再回来登录。';showToast('验证邮件已发送');}}catch{$('#syncStatus').textContent='账号创建失败，请检查 Supabase 邮件验证设置。';showToast('账号创建失败');}}
 async function handleSyncSignOut(){if(!cloudClient)return;try{await cloudClient.auth.signOut();syncUser=null;lastCloudUser='';updateSyncUI();showToast('已退出云同步');}catch{showToast('退出失败，请重试');}}
 
+function renderCategoryFilters(){
+  const box=$('#categoryFilters');
+  box.innerHTML=`<div class="category-filter-heading"><strong>分类</strong><span>右键可管理</span></div><div class="category-filter-list">${state.categories.map(cat=>`<button type="button" class="category-filter ${activeCategory===cat.name&&!systemSettingsMode?'active':''}" data-cat="${esc(cat.name)}" title="${esc(cat.name)}">${categoryIcon(cat)}<span>${esc(cat.name)}</span></button>`).join('')}</div>`;
+  box.querySelectorAll('.category-filter').forEach(button=>{
+    button.addEventListener('click',()=>{activeCategory=button.dataset.cat;systemSettingsMode=false;managerMode=false;renderRail();renderBookmarks();});
+    button.addEventListener('contextmenu',event=>{event.preventDefault();event.stopPropagation();openCategoryContext(button.dataset.cat,event);});
+  });
+}
 function renderRail(){
   const box=$('#railLinks');
   const home=`<button type="button" class="rail-link ${activeCategory==='全部'&&!systemSettingsMode?'active':''}" data-cat="全部" title="我的首页书签"><span class="rail-icon rail-icon-home">${svg.home}</span><span>首页</span></button>`;
-  const categories=state.categories.map(cat=>`<div class="rail-category-wrap"><button type="button" class="rail-link ${activeCategory===cat.name&&!systemSettingsMode?'active':''}" data-cat="${esc(cat.name)}" title="${esc(cat.name)}">${categoryIcon(cat)}<span>${esc(cat.name)}</span></button></div>`).join('');
   const system=`<button type="button" class="rail-link rail-system-trigger ${systemSettingsMode?'active':''}" data-system-page="true" title="系统设置" aria-label="系统设置"><span class="rail-icon rail-icon-settings">${svg.settings}</span><span>系统设置</span></button>`;
-  box.innerHTML=home+`<div class="rail-category-list" aria-label="书签分类">${categories}</div>`+system;
+  box.innerHTML=home+system;
   const homeDrop=box.querySelector('[data-cat="全部"]');homeDrop.addEventListener('dragover',allowHomeDrop);homeDrop.addEventListener('drop',handleHomeDrop);
-  box.querySelectorAll('[data-cat]').forEach(b=>b.addEventListener('click',()=>{activeCategory=b.dataset.cat;systemSettingsMode=false;managerMode=false;renderRail();renderBookmarks();}));
+  homeDrop.addEventListener('click',()=>{activeCategory='全部';systemSettingsMode=false;managerMode=false;renderRail();renderBookmarks();});
+  renderCategoryFilters();
   box.querySelector('[data-system-page]').addEventListener('click',()=>{systemSettingsMode=true;managerMode=false;closeCategoryContext();closeBookmarkContext();renderRail();renderBookmarks();});
-  box.querySelectorAll('.rail-category-wrap > .rail-link').forEach(b=>b.addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();openCategoryContext(b.dataset.cat,e);}));
 }
 function openSystemAction(action){
   closeCategoryContext();closeBookmarkContext();
@@ -515,7 +564,7 @@ function openSystemAction(action){
 function openCategoryContext(name,event){const menu=$('#categoryContextMenu');if(!state.categories.some(cat=>cat.name===name))return;closeBookmarkContext();contextCategoryName=name;menu.innerHTML='<button type="button" class="category-context-item" data-category-action="edit">编辑分类</button><button type="button" class="category-context-item" data-category-action="delete">删除</button>';menu.classList.add('open');menu.setAttribute('aria-hidden','false');menu.style.left=Math.max(8,Math.min(event.clientX+12,window.innerWidth-154))+'px';menu.style.top=Math.max(8,Math.min(event.clientY-18,window.innerHeight-menu.offsetHeight-8))+'px';}
 $('#categoryContextMenu').addEventListener('click',e=>{const action=e.target.closest('[data-category-action]')?.dataset.categoryAction;if(!action||!contextCategoryName)return;const name=contextCategoryName;closeCategoryContext();if(action==='edit')openCategory(name);else if(action==='delete')deleteCategory(name);});
 document.addEventListener('click',e=>{if(!e.target.closest('#categoryContextMenu'))closeCategoryContext();});document.addEventListener('scroll',closeCategoryContext,true);window.addEventListener('resize',closeCategoryContext);
-function renderBookmarks(){$('#home').classList.toggle('system-settings-active',systemSettingsMode&&!managerMode);$('.hero').hidden=systemSettingsMode&&!managerMode;$('#systemSettingsPage').hidden=!systemSettingsMode||managerMode;$('#bookmarkGrid').hidden=systemSettingsMode&&!managerMode;$('#bookmarkManager').hidden=!managerMode;$('#managerCount').textContent=state.bookmarks.length+' 个书签 · 直接在卡片上编辑分类和首页显示';const grid=$('#bookmarkGrid'),layoutSizes={'1x1':[1,1],'1x2':[1,2],'2x1':[2,1],'2x2':[2,2],'2x4':[2,4]};grid.classList.toggle('manager-mode',managerMode);const list=state.bookmarks.map((x,i)=>({...x,_i:i})).filter(x=>managerMode||(activeCategory==='全部'?isOnHome(x):x.category===activeCategory));if(!list.length){grid.innerHTML=isHomeView()?'<div class="empty-state"><p>首页只显示你主动添加的书签，不会汇总其他文件夹。</p><p>进入书签管理勾选「首页」，或将书签、网址拖到这里。</p><button type="button" class="home-add-bookmark" data-add-bookmark>＋ 添加首页书签</button></div>':'<div class="empty-state">这里还没有书签。<button type="button" data-add-bookmark>添加书签</button></div>';wireBookmarkGrid(grid);return;}grid.innerHTML=list.map(b=>{const favicon=b.icon?`<span class="fallback">${esc(b.icon)}</span>`:`<span class="fallback">${esc((b.name||'?').slice(0,2))}</span>`;const iconUrl=host(b.url)?`https://www.google.com/s2/favicons?domain=${encodeURIComponent(host(b.url))}&sz=64`:'';const layout=layoutSizes[b.layout]?b.layout:'1x1',[cols,rows]=layoutSizes[layout];const managerControls=managerMode?`<div class="bookmark-actions"><button type="button" data-bookmark-edit>编辑</button><label>分类<select data-bookmark-category>${state.categories.map(cat=>`<option value="${esc(cat.name)}" ${cat.name===b.category?'selected':''}>${esc(cat.name)}</option>`).join('')}</select></label><label class="manager-home"><input type="checkbox" data-bookmark-home ${isOnHome(b)?'checked':''}>首页</label><button type="button" class="manager-delete" data-bookmark-delete>删除</button></div>`:'';return `<div class="bookmark" data-index="${b._i}" data-layout="${layout}" style="grid-column:span ${cols};grid-row:span ${rows}"><a class="bookmark-link" href="${esc(b.url)}" target="_blank" rel="noopener" title="${esc(b.name)} · ${esc(host(b.url))}"><span class="favicon" style="--tile:${esc(b.tile||'#eff2f7')};--tone:${esc(b.tone||'#465366')}">${favicon}${iconUrl?`<img src="${iconUrl}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:''}</span><span class="bookmark-label">${esc(b.name)}</span></a>${managerControls}</div>`;}).join('');grid.querySelectorAll('.bookmark').forEach(card=>card.querySelector('.bookmark-link').addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();openBookmarkContext(Number(card.dataset.index),e);}));wireBookmarkGrid(grid);wireManagerActions(grid);}
+function renderBookmarks(){$('#home').classList.toggle('system-settings-active',systemSettingsMode&&!managerMode);$('.hero').hidden=systemSettingsMode&&!managerMode;$('#systemSettingsPage').hidden=!systemSettingsMode||managerMode;$('#bookmarkGrid').hidden=systemSettingsMode&&!managerMode;$('#bookmarkManager').hidden=!managerMode;$('#categoryFilters').hidden=systemSettingsMode||managerMode;$('#managerCount').textContent=state.bookmarks.length+' 个书签 · 直接在卡片上编辑分类和首页显示';const grid=$('#bookmarkGrid'),layoutSizes={'1x1':[1,1],'1x2':[1,2],'2x1':[2,1],'2x2':[2,2],'2x4':[2,4]};grid.classList.toggle('manager-mode',managerMode);const list=state.bookmarks.map((x,i)=>({...x,_i:i})).filter(x=>managerMode||(activeCategory==='全部'?isOnHome(x):x.category===activeCategory));if(!list.length){grid.innerHTML=isHomeView()?'<div class="empty-state"><p>首页只显示你主动添加的书签，不会汇总其他文件夹。</p><p>进入书签管理勾选「首页」，或将书签、网址拖到这里。</p><button type="button" class="home-add-bookmark" data-add-bookmark>＋ 添加首页书签</button></div>':'<div class="empty-state">这里还没有书签。<button type="button" data-add-bookmark>添加书签</button></div>';wireBookmarkGrid(grid);return;}grid.innerHTML=list.map(b=>{const favicon=b.icon?`<span class="fallback">${esc(b.icon)}</span>`:`<span class="fallback">${esc((b.name||'?').slice(0,2))}</span>`;const iconUrl=host(b.url)?`https://www.google.com/s2/favicons?domain=${encodeURIComponent(host(b.url))}&sz=64`:'';const layout=layoutSizes[b.layout]?b.layout:'1x1',[cols,rows]=layoutSizes[layout];const managerControls=managerMode?`<div class="bookmark-actions"><button type="button" data-bookmark-edit>编辑</button><label>分类<select data-bookmark-category>${state.categories.map(cat=>`<option value="${esc(cat.name)}" ${cat.name===b.category?'selected':''}>${esc(cat.name)}</option>`).join('')}</select></label><label class="manager-home"><input type="checkbox" data-bookmark-home ${isOnHome(b)?'checked':''}>首页</label><button type="button" class="manager-delete" data-bookmark-delete>删除</button></div>`:'';return `<div class="bookmark" data-index="${b._i}" data-layout="${layout}" style="grid-column:span ${cols};grid-row:span ${rows}"><a class="bookmark-link" href="${esc(b.url)}" target="_blank" rel="noopener" title="${esc(b.name)} · ${esc(host(b.url))}"><span class="favicon" style="--tile:${esc(b.tile||'#eff2f7')};--tone:${esc(b.tone||'#465366')}">${favicon}${iconUrl?`<img src="${iconUrl}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:''}</span><span class="bookmark-label">${esc(b.name)}</span></a>${managerControls}</div>`;}).join('');grid.querySelectorAll('.bookmark').forEach(card=>card.querySelector('.bookmark-link').addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();openBookmarkContext(Number(card.dataset.index),e);}));wireBookmarkGrid(grid);wireManagerActions(grid);}
 function renderDock(){const dock=$('.dock'),box=$('#dockBookmarks'),pinned=state.bookmarks.map((b,i)=>({...b,_i:i})).filter(b=>b.dock);box.innerHTML=pinned.map(b=>{const fallback=b.icon||((b.name||'?').slice(0,2)),iconUrl=host(b.url)?`https://www.google.com/s2/favicons?domain=${encodeURIComponent(host(b.url))}&sz=64`:'';return `<a class="dock-bookmark" data-index="${b._i}" href="${esc(b.url)}" target="_blank" rel="noopener" title="${esc(b.name)}"><span class="favicon">${`<span class=\"fallback\">${esc(fallback)}</span>`}${iconUrl?`<img src="${iconUrl}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:''}</span></a>`;}).join('');dock.classList.toggle('has-bookmarks',pinned.length>0);box.querySelectorAll('.dock-bookmark').forEach(item=>item.addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();openBookmarkContext(Number(item.dataset.index),e);}));}
 function closeBookmarkContext(){const menu=$('#bookmarkContextMenu');menu.classList.remove('open');menu.setAttribute('aria-hidden','true');contextBookmarkIndex=-1;}
 function openBookmarkContext(index,event){const bookmark=state.bookmarks[index],menu=$('#bookmarkContextMenu');if(!bookmark)return;closeCategoryContext();contextBookmarkIndex=index;const layouts=['1x1','1x2','2x1','2x2','2x4'];menu.innerHTML=`<button type="button" class="context-item" data-context-action="open"><span class="context-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M3.5 8h17M7 6h.01M10 6h.01"/></svg></span><span>新标签打开</span></button><button type="button" class="context-item" data-context-action="edit"><span class="context-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h11"/><path d="m14.5 5.5 4 4M7 17l3.5-.7L20 6.8a2.1 2.1 0 0 0-3-3L7.5 13.3 7 17Z"/></svg></span><span>编辑标签</span></button><div class="context-submenu-trigger" tabindex="0"><div class="context-item"><span><span class="context-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-7-7 18-3.5-7.5L3 11Z"/><path d="M10.5 14.5 21 4"/></svg></span>移动至分类</span><span class="context-arrow">›</span></div><div class="bookmark-submenu">${state.categories.map(cat=>`<button type="button" class="context-item" data-move-category="${esc(cat.name)}">${esc(cat.icon||'✦')} <span>${esc(cat.name)}</span></button>`).join('')}</div></div><button type="button" class="context-item" data-context-action="home"><span class="context-icon">${svg.home}</span><span>${isOnHome(bookmark)?'从首页移出':'加入首页'}</span></button><button type="button" class="context-item" data-context-action="dock"><span class="context-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="15" rx="2"/><path d="M7 8h.01M12 8h.01M17 8h.01M7 15h10"/></svg></span><span>${bookmark.dock?'移出 Dock 栏':'加入Dock栏'}</span></button><div class="context-layout"><div class="context-layout-title"><span class="context-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 4v16M3 12h18"/></svg></span>布局</div><div class="layout-options">${layouts.map(size=>`<button type="button" class="${(bookmark.layout||'1x1')===size?'selected':''}" data-layout="${size}">${size}</button>`).join('')}</div></div><div class="context-divider"></div><button type="button" class="context-item context-delete" data-context-action="delete"><span class="context-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M5.5 7l1 14h11l1-14M9 7V4h6v3"/></svg></span><span>删除标签</span></button>`;menu.classList.add('open');menu.setAttribute('aria-hidden','false');menu.style.left=Math.max(8,Math.min(event.clientX,window.innerWidth-198))+'px';menu.style.top='8px';const top=Math.max(8,Math.min(event.clientY,window.innerHeight-menu.offsetHeight-8));menu.style.top=top+'px';}
