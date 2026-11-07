@@ -607,7 +607,39 @@ function scheduleCloudSync(){if(!cloudClient||!syncUser)return;clearTimeout(sync
 async function syncFromCloud(){if(!cloudClient||!syncUser)return;try{const {data,error}=await cloudClient.from('bookmark_sync').select('payload').eq('user_id',syncUser.id).maybeSingle();if(error)throw error;if(data?.payload){const remote=data.payload,local=state;state={...local,...remote};const key=b=>{try{return new URL(b.url).href.replace(/\/$/,'').toLowerCase();}catch{return String(b.url||'').toLowerCase();}};const bookmarks=new Map();for(const b of [...(remote.bookmarks||[]),...(local.bookmarks||[])])if(b&&b.url&&!bookmarks.has(key(b)))bookmarks.set(key(b),b);state.bookmarks=[...bookmarks.values()].filter(bookmark=>host(bookmark.url).toLowerCase()!=='nav.eooce.com');const categories=new Map();for(const c of [...(remote.categories||[]),...(local.categories||[])])if(c?.name&&!categories.has(c.name))categories.set(c.name,c);state.categories=[...categories.values()];save(true);renderRail();renderBookmarks();renderDock();setWallpaper();applyIconSize();}await syncToCloud(false);updateSyncUI();}catch{ $('#syncStatus').textContent='同步失败：请检查 Supabase 表和安全策略设置。';showToast('云同步失败，请检查服务配置');}}
 async function syncToCloud(showMessage=false){if(!cloudClient||!syncUser){if(showMessage)showToast('请先配置并登录云同步');return;}try{const payload=JSON.parse(JSON.stringify(state));delete payload.wallpaper;const {error}=await cloudClient.from('bookmark_sync').upsert({user_id:syncUser.id,payload,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error)throw error;if(showMessage)showToast('书签已同步到云端');updateSyncUI();}catch{$('#syncStatus').textContent='同步失败：请在 Supabase 执行项目附带的 schema SQL。';showToast('同步失败，请检查云端数据表配置');}}
 async function handleSyncLogin(event){event.preventDefault();if(!cloudClient){showToast('请先配置云同步服务');return;}const email=$('#syncEmail').value.trim(),password=$('#syncPassword').value;$('#syncLogin').disabled=true;try{const {error}=await cloudClient.auth.signInWithPassword({email,password});if(error)throw error;showToast('登录成功，正在同步书签');}catch{$('#syncStatus').textContent='登录失败，请检查邮箱、密码或邮件验证状态。';showToast('登录失败，请检查账号信息');}finally{updateSyncUI();}}
-async function handleSyncSignup(){if(!cloudClient){showToast('请先配置云同步服务');return;}const email=$('#syncEmail').value.trim(),password=$('#syncPassword').value;if(!email||password.length<8){showToast('请填写有效邮箱和至少 8 位密码');return;}try{const {data,error}=await cloudClient.auth.signUp({email,password});if(error)throw error;if(data.session)showToast('账号创建成功，开始同步');else{$('#syncStatus').textContent='账号已创建，请先查收邮件完成验证，再回来登录。';showToast('验证邮件已发送');}}catch{$('#syncStatus').textContent='账号创建失败，请检查 Supabase 邮件验证设置。';showToast('账号创建失败');}}
+function syncSignupErrorMessage(error){
+  const code=typeof error?.code==='string'?error.code.toLowerCase():'';
+  const status=Number(error?.status)||0;
+  const detail=`${code} ${typeof error?.message==='string'?error.message.toLowerCase():''}`;
+  const messages={
+    email_exists:'这个邮箱可能已注册。请尝试登录；如果忘记密码，可使用密码重置。',
+    user_already_exists:'这个邮箱可能已注册。请尝试登录；如果忘记密码，可使用密码重置。',
+    invalid_email:'邮箱地址格式无效，请检查后重试。',
+    email_address_invalid:'邮箱地址格式无效，请检查后重试。',
+    weak_password:'密码未达到当前项目的安全要求，请改用更长且更难猜的密码。',
+    signup_disabled:'当前项目已关闭新用户注册，请联系站点管理员。',
+    email_provider_disabled:'当前项目未启用邮箱注册，请联系站点管理员。',
+    over_email_send_rate_limit:'验证邮件发送过于频繁，请等待一段时间后再试。',
+    over_request_rate_limit:'请求过于频繁，请等待一段时间后重试。',
+    email_address_not_authorized:'此邮箱未获当前项目授权注册，请联系站点管理员。',
+    captcha_failed:'安全验证未通过，请刷新页面后重试；若反复出现，请联系站点管理员。',
+    validation_failed:'注册信息未通过服务器校验，请检查邮箱和密码要求后重试。',
+    request_timeout:'连接身份验证服务超时，请检查网络后重试。',
+    unexpected_failure:'身份验证服务暂时发生故障，请稍后重试；若持续发生，请联系站点管理员。'
+  };
+  if(messages[code])return messages[code];
+  if(/email_exists|user_already_exists|already registered|user already exists/.test(detail))return messages.email_exists;
+  if(/invalid.*email|email.*invalid/.test(detail))return messages.invalid_email;
+  if(/weak_password|password.*(weak|too short|length)/.test(detail))return messages.weak_password;
+  if(/signup.*disabled|signups? not allowed/.test(detail))return messages.signup_disabled;
+  if(/email.*provider.*disabled|email.*not enabled/.test(detail))return messages.email_provider_disabled;
+  if(/rate.?limit|too many requests/.test(detail)||status===429)return messages.over_request_rate_limit;
+  if(/failed to fetch|networkerror|network request failed|load failed|fetch failed|timeout/.test(detail))return '无法连接身份验证服务，请检查网络后重试。';
+  if(status>=500)return `身份验证服务暂时发生故障（HTTP ${status}），请稍后重试；若持续发生，请联系站点管理员。`;
+  if(code&&/^[a-z0-9_-]{1,60}$/.test(code))return `注册失败（错误代码 ${code}${status?`，HTTP ${status}`:''}）。请稍后重试；若仍失败，请联系站点管理员。`;
+  return status?`注册请求未能完成（HTTP ${status}）。请检查邮箱和密码后重试；若仍失败，请联系站点管理员。`:'注册失败，服务未提供可识别的原因。请检查网络后重试；若仍失败，请联系站点管理员。';
+}
+async function handleSyncSignup(){if(!cloudClient){showToast('请先配置云同步服务');return;}const email=$('#syncEmail').value.trim(),password=$('#syncPassword').value;if(!email||password.length<8){showToast('请填写有效邮箱和至少 8 位密码');return;}try{const {data,error}=await cloudClient.auth.signUp({email,password});if(error)throw error;if(data.session)showToast('账号创建成功，开始同步');else{$('#syncStatus').textContent='账号已创建，请先查收邮件完成验证，再回来登录。';showToast('验证邮件已发送');}}catch(error){const message=syncSignupErrorMessage(error);$('#syncStatus').textContent=message;showToast(message);}}
 async function handleSyncSignOut(){if(!cloudClient)return;try{await cloudClient.auth.signOut();syncUser=null;lastCloudUser='';updateSyncUI();showToast('已退出云同步');}catch{showToast('退出失败，请重试');}}
 
 function renderCategoryFilters(){
