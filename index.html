@@ -298,6 +298,14 @@
 .sync-setting-card{display:flex;flex-direction:column;gap:9px;}
 .sync-setting-card span{font-size:11px;color:#707984;line-height:1.6;}
 @media(max-width:560px){.rail-icon{width:28px;height:28px;border-radius:9px}.rail-icon svg{width:16px!important;height:16px!important}.rail-bottom button{min-height:45px!important}.bookmark-manager:not([hidden])+.bookmark-grid.manager-mode{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.bookmark-grid.manager-mode .bookmark{min-height:166px;padding:7px}.bookmark-actions{gap:4px!important}.bookmark-actions button,.bookmark-actions select{font-size:9px;padding:5px 6px}}
+:root{--icon-size:56px}
+.bookmark-grid:not(.manager-mode){grid-template-columns:repeat(auto-fill,minmax(calc(var(--icon-size) + 20px),1fr));grid-auto-rows:calc(var(--icon-size) + 24px)}
+.bookmark-grid:not(.manager-mode) .bookmark-link,.bookmark-grid>.home-add-bookmark{min-height:0}
+.bookmark[data-layout] .favicon{width:var(--icon-size);height:var(--icon-size);flex:none}
+@media(max-width:560px){
+  .bookmark-grid:not(.manager-mode){grid-template-columns:repeat(auto-fill,minmax(var(--icon-size),1fr))}
+  .bookmark[data-layout] .favicon{width:min(var(--icon-size),100%);height:auto;aspect-ratio:1;flex:none}
+}
 </style>
 </head>
 <body>
