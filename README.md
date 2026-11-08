@@ -33,10 +33,12 @@ python3 -m http.server 8000
 
 静态网页本身没有账号数据库；项目已接入 Supabase Auth 与每账号独立的书签 JSON 同步。部署者需要先创建一个 Supabase 项目：
 
-1. 在 Supabase 项目设置中启用 Email 登录，并按需要配置邮箱验证。
-2. 在 SQL Editor 执行本仓库的 `supabase-schema.sql`。该表启用 RLS，每个账号只能读取和修改自己的行。
-3. `sync-config.js` 已配置本项目的公开 Supabase URL 与 anon/publishable key；切换到其他 Supabase 项目时，只替换为该项目自己的公开值。不要填入 `service_role` key。
-4. 部署网页；用户在侧栏点「云同步」注册/登录，同一账号登录其他设备后会恢复远端书签。首次登录时本机和云端书签按网址合并。
+1. 在 Supabase 项目设置中启用 Email 登录，并配置邮件发送服务；若启用邮箱验证，也请完成相关设置。
+2. 在 Supabase 的 **Authentication → URL Configuration → Redirect URLs** 中加入 `https://nova-6sm.pages.dev/`（或你的实际站点地址）。密码重置邮件会把用户带回当前网页；生产环境建议配置自己的 SMTP 服务。
+3. 在 SQL Editor 执行本仓库的 `supabase-schema.sql`。该表启用 RLS，每个账号只能读取和修改自己的行。
+4. `sync-config.js` 已配置本项目的公开 Supabase URL 与 anon/publishable key；切换到其他 Supabase 项目时，只替换为该项目自己的公开值。不要填入 `service_role` key。
+5. 部署网页；用户在侧栏点「云同步」注册/登录，同一账号登录其他设备后会恢复远端书签。首次登录时本机和云端书签按网址合并。
+6. 忘记密码时，用户可在登录框点击「忘记密码？重置密码」，输入邮箱并主动请求邮件；点击邮件链接返回网页后输入两次新密码即可更新。网站不会自动发送重置邮件；实际发送受 Supabase 邮件服务与速率限制影响。
 
 配置有效且已执行 SQL 迁移后，登录按钮才可用于跨设备同步；缺少配置时登录按钮会保持禁用。云端表尚未创建时，登录或同步无法完成。
 
