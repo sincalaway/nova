@@ -2,7 +2,7 @@
 
 ## 产品方向
 
-Nova 是本地优先、可自部署的个人起始页，提供静态 Web 与 Chromium Manifest V3 新标签页扩展。默认不要求账号或服务器；用户可在需要时启用已有 Supabase 账号同步。项目当前由根目录静态主页和 `extension/` 扩展组成，Cloudflare Pages 从根目录直接发布，因此本轮采用免构建的渐进式模块化，不先迁移 Vue/Vite，也不改变已部署站点的构建入口。
+Nova 是本地优先、可自部署的个人起始页，Web 使用 Vue 3 与 Vite 构建，另提供 Chromium Manifest V3 新标签页扩展。默认不要求账号或服务器；用户可在需要时启用已有 Supabase 账号同步。网页模板已迁入 Vue 单文件组件，现有本地状态、书签、认证和云同步控制器保留为兼容模块；扩展维持独立、免 Vue 的入口。
 
 ## 现状与兼容边界
 
@@ -16,9 +16,15 @@ Nova 是本地优先、可自部署的个人起始页，提供静态 Web 与 Chr
 
 ```text
 /
-├── index.html                    # 现有免构建 Web 入口（生产路径保持不变）
+├── index.html                    # Vite HTML 入口
+├── package.json / vite.config.js # Vue/Vite 依赖与生产构建配置
 ├── sync-config.js                # Supabase 公共 URL / anon key 配置，仅保留现有用途
 ├── supabase-schema.sql           # 现有 bookmark_sync + RLS，不改注册/权限模型
+├── src/
+│   ├── App.vue                   # Vue 主页模板与启动生命周期
+│   ├── styles.css                # 主页全局样式
+│   └── legacy/site-app.js        # 原书签、认证与同步控制器兼容层
+├── public/                       # 根目录图片和 sync-config.js 的静态资源链接
 ├── shared/
 │   ├── model.js                  # 新功能默认值、状态归一化与安全 URL 工具
 │   ├── assets.js                 # 本地壁纸 IndexedDB 读写
@@ -26,8 +32,9 @@ Nova 是本地优先、可自部署的个人起始页，提供静态 Web 与 Chr
 ├── extension/
 │   ├── newtab.html               # 新标签页入口
 │   ├── app.js / app.css          # 既有扩展体验
-│   └── dashboard-enhancements.js # 打包时由 shared/dashboard.js 同步生成
-├── scripts/package-extension.mjs # 同步共享模块并输出可加载/分发的扩展包
+│   └── shared/                    # 打包时由 shared/ 同步生成
+├── scripts/package-extension.mjs # 同步共享模块并输出扩展包
+├── build/                         # Vite 生产输出，Cloudflare Pages 发布此目录
 └── docs/
     ├── ARCHITECTURE.md
     └── data-model.json
@@ -59,7 +66,7 @@ Nova 是本地优先、可自部署的个人起始页，提供静态 Web 与 Chr
 
 ## 关键设计取舍
 
-- 不在本轮把整站改成 Vue/Vite：那会要求改变 Cloudflare Pages 输出目录及部署设置，并增加静态注册/同步流程的回归风险；组件化由共享 JS 模块和数据驱动卡片先提供。
+- Vue/Vite 负责网页模板、样式与构建；原认证/同步和书签控制器先以 Vue 挂载后的兼容模块运行，避免在更换页面框架时改动 Supabase 请求、状态键或数据合并策略。后续可分步将控制器迁为 Vue composables，并单独做认证、重置邮件与跨设备同步回归测试。
 - 浏览器扩展仅允许打包目录内资源。共享模块由脚本复制到 `extension/` 后再打包，确保加载未打包扩展时也不引用目录外文件。
 - 书签类别先保留旧 `category` 主分类，同时增加可选 `categories[]`；老版本仍可读主分类，新版支持多个分类。
 - 本地优先不等于隐私数据绝不上云：仅用户主动登录后，原有同步协议按当前行为同步 JSON payload。天气定位只在用户主动授权/输入城市后使用，不静默读取精确位置。

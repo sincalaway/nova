@@ -16,15 +16,16 @@ Nova 是本地优先、可自部署的个人主页与 Chromium 新标签页扩�
 
 ## 本地运行 Web
 
-项目采用免构建的 HTML/CSS/JavaScript 结构，网页入口仍是根目录 `index.html`。在项目根目录执行：
+网页使用 Vue 3 单文件组件和 Vite 构建；原书签、账号和云同步控制器暂由兼容模块加载，以保持现有行为。在项目根目录执行：
 
 ```bash
-python3 -m http.server 8000
+npm ci
+npm run dev
 ```
 
-然后访问 <http://localhost:8000>。也可用任意静态文件服务器。建议通过 `http://localhost` 或 HTTPS 使用；浏览器定位等能力要求安全上下文。
+然后访问 Vite 显示的本地地址（默认 <http://localhost:5173>）。生产构建使用 `npm run build`，静态产物写入 `build/`；可用 `npm run preview` 本地预览。建议通过 `http://localhost` 或 HTTPS 使用；浏览器定位等能力要求安全上下文。
 
-当前 Cloudflare Pages 生产站点为 <https://nova-6sm.pages.dev/>。网页入口仍在仓库根目录，不需要迁移到 Vue/Vite 构建目录。
+当前 Cloudflare Pages 生产站点为 <https://nova-6sm.pages.dev/>。现有 Pages 项目需将构建命令设为 `npm run build`、输出目录设为 `build` 后再发布 Vue/Vite 版本。
 
 ## 构建并安装 Chrome / Edge 扩展
 
@@ -48,7 +49,7 @@ node scripts/package-extension.mjs
 
 ## Cloudflare Pages 自部署
 
-本仓库根目录含有 `index.html`，无需框架构建。Cloudflare 官方说明：[部署静态 HTML](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/)、[Git 集成](https://developers.cloudflare.com/pages/configuration/git-integration/)。
+Cloudflare Pages 使用 Vue/Vite 静态构建产物。Cloudflare 官方说明：[Git 集成](https://developers.cloudflare.com/pages/configuration/git-integration/)。
 
 在 Cloudflare Dashboard 选择 **Workers & Pages → Create application → Pages → Import an existing Git repository**，连接 `sincalaway/nova`。构建配置使用：
 
@@ -56,10 +57,10 @@ node scripts/package-extension.mjs
 | --- | --- |
 | Production branch | `main` |
 | Framework preset | `None` |
-| Build command | `exit 0` |
-| Build output directory | `.` |
+| Build command | `npm run build` |
+| Build output directory | `build` |
 
-之后按 Pages 指引部署或绑定自定义域名。修改 `main` 后 Git 集成会自动部署。Git 集成和 Direct Upload 是不同项目创建方式，本仓库应沿用现有 Git 集成设置。
+先在现有 Pages 项目更新构建命令和输出目录，再通过 Git 集成部署。修改 `main` 后 Git 集成会自动部署；Git 集成和 Direct Upload 是不同项目创建方式，本仓库应沿用现有 Git 集成设置。
 
 ## 第三方 API、许可与注意事项
 
@@ -72,13 +73,14 @@ node scripts/package-extension.mjs
 ## 项目结构与架构
 
 ```text
-index.html                    # 保持原静态 Web 部署入口
-sync-config.js                # 原有 Supabase 配置入口
-supabase-schema.sql           # 原有同步表与 RLS（本次不改）
-shared/model.js               # 默认值和旧数据兼容归一化
-shared/assets.js              # IndexedDB 媒体存储
-shared/dashboard.js           # Web/扩展共用主页增强层
-extension/                    # Manifest V3 新标签页扩展
+index.html                    # Vite HTML 入口
+src/App.vue                   # Vue 主页模板与挂载生命周期
+src/styles.css                # 原站点全局样式
+src/legacy/site-app.js        # 既有书签、Supabase 认证与同步控制器
+public/                       # 指向现有根目录图片和同步配置的静态资源链接
+shared/                       # Web/扩展共用的数据、媒体与增强模块
+extension/                    # 独立的 Manifest V3 新标签页扩展
+build/                        # Vite 生产产物（本地构建生成）
 scripts/package-extension.mjs # 复制共享模块并打包扩展
 docs/                         # 架构、数据模型及 API 来源说明
 ```
