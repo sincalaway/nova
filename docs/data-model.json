@@ -1,0 +1,316 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nova.example/schema/state-v2.json",
+  "title": "Nova 本地状态（兼容 ziyou.replica.v1）",
+  "description": "现有根状态继续使用 ziyou.replica.v1；schemaVersion/nova 是可选扩展字段，旧客户端忽略未知字段。",
+  "type": "object",
+  "required": [
+    "bookmarks",
+    "categories"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 2
+    },
+    "bookmarks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "url",
+          "category"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "category": {
+            "type": "string",
+            "description": "旧版主分类字段，始终保留。"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "新版附加分类；缺省时按 category 处理。"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "iconUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "openMode": {
+            "enum": [
+              "tab",
+              "webapp"
+            ]
+          },
+          "home": {
+            "type": "boolean"
+          },
+          "dock": {
+            "type": "boolean"
+          },
+          "layout": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "icon": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "engine": {
+      "type": "string",
+      "description": "兼容旧版搜索引擎模板字段。"
+    },
+    "note": {
+      "type": "string",
+      "description": "兼容旧版纯文本记事字段。"
+    },
+    "wallpaper": {
+      "type": "string",
+      "description": "兼容旧版本地壁纸字段；大文件不放此字段。"
+    },
+    "hour24": {
+      "type": "boolean"
+    },
+    "showSeconds": {
+      "type": "boolean"
+    },
+    "nova": {
+      "type": "object",
+      "description": "新功能命名空间，缺省时按模型默认值初始化。",
+      "properties": {
+        "version": {
+          "const": 2
+        },
+        "settings": {
+          "type": "object",
+          "properties": {
+            "theme": {
+              "enum": [
+                "dark",
+                "light"
+              ]
+            },
+            "minimalMode": {
+              "type": "boolean"
+            },
+            "translationEnabled": {
+              "type": "boolean"
+            },
+            "suggestionsEnabled": {
+              "type": "boolean"
+            },
+            "searchEngineId": {
+              "type": "string"
+            },
+            "wallpaper": {
+              "type": "object",
+              "properties": {
+                "source": {
+                  "enum": [
+                    "library",
+                    "url",
+                    "indexeddb",
+                    "default"
+                  ]
+                },
+                "kind": {
+                  "enum": [
+                    "image",
+                    "video"
+                  ]
+                },
+                "value": {
+                  "type": "string"
+                },
+                "assetId": {
+                  "type": "string"
+                },
+                "libraryId": {
+                  "type": "string"
+                },
+                "blur": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 20
+                },
+                "shade": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 0.8
+                }
+              },
+              "additionalProperties": true
+            },
+            "dateFormat": {
+              "enum": [
+                "full",
+                "short",
+                "iso",
+                "month-day"
+              ]
+            },
+            "wallpaperCategory": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        "searchEngines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "template"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 40
+              },
+              "template": {
+                "type": "string",
+                "description": "需包含 {query} 占位符。"
+              },
+              "icon": {
+                "type": "string"
+              },
+              "builtin": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "searchHistory": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "maxItems": 30
+        },
+        "widgets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "type",
+              "enabled",
+              "order",
+              "config"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "notes",
+                  "weather",
+                  "hotlist",
+                  "calendar",
+                  "dailyQuote"
+                ]
+              },
+              "enabled": {
+                "type": "boolean"
+              },
+              "order": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "config": {
+                "type": "object"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "webApps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "title",
+              "url"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "iconUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "minimized": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

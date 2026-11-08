@@ -1,89 +1,86 @@
-# 岁瞬网页书签 · 星云主页
+# Nova — 个人起始页与书签工作台
 
-一个无需构建步骤的静态个人书签主页。页面打开后即可搜索、整理常用网站，并可自定义背景和时钟显示。
+Nova 是本地优先、可自部署的个人主页与 Chromium 新标签页扩展。项目保留原静态主页、Supabase 注册/登录和云同步书签实现，并在其上增加多分类、搜索、壁纸、组件卡片与 WebApp 窗口。
 
-## 使用方法
+## 功能一览
 
-### 打开主页
+| 模块 | 已实现功能 |
+| --- | --- |
+| 起始页 | Web 首页与 Chrome/Edge 新标签页、时间和日期格式选项、原有 12/24 小时与秒数设置、亮/暗主题、极简模式、桌面与手机适配。 |
+| 书签 | 添加/编辑/删除、常用站点目录、自定义图标 URL、主分类与多分类、浏览器书签 HTML 导入、拖拽排序；原有图标大小和卡片布局选项继续可用。 |
+| 搜索 | Bing、Google、百度、搜狗、DuckDuckGo、自定义搜索模板、Tab / Shift+Tab 切换、快捷翻译、本地建议和搜索历史（均可开关）。 |
+| 壁纸 | 内置分类壁纸库、随机切换、自定义图片/视频 URL、本地图片/视频上传、模糊和遮罩调整。大文件存在 IndexedDB，不放入 localStorage。 |
+| 组件 | 可添加/移除并拖拽排序：记事本（纯文本/简易 Markdown）、天气、热搜、月历、每日一言。 |
+| WebApp | 书签可选内嵌窗口打开；Dock、最小化、全屏、新标签页打开。目标网站禁止 iframe 时改用新标签页。 |
+| 数据 | 原有 JSON 导入/导出、Supabase 账号注册和书签云同步行为。 |
 
-部署后访问 Cloudflare Pages 提供的 `*.pages.dev` 地址，也可以绑定自己的域名。若暂时不部署，可在项目目录启动本地预览：
+## 本地运行 Web
+
+项目采用免构建的 HTML/CSS/JavaScript 结构，网页入口仍是根目录 `index.html`。在项目根目录执行：
 
 ```bash
 python3 -m http.server 8000
 ```
 
-然后访问 <http://localhost:8000>。也可以直接打开 `index.html`；本地 HTTP 预览通常更稳定。
+然后访问 <http://localhost:8000>。也可用任意静态文件服务器。建议通过 `http://localhost` 或 HTTPS 使用；浏览器定位等能力要求安全上下文。
 
-这是一个网页，不是浏览器扩展。可以把主页地址加入浏览器书签，或在浏览器设置中设为启动页；是否能替换新标签页取决于浏览器自身支持。
+当前 Cloudflare Pages 生产站点为 <https://nova-6sm.pages.dev/>。网页入口仍在仓库根目录，不需要迁移到 Vue/Vite 构建目录。
 
-### 添加和整理书签
+## 构建并安装 Chrome / Edge 扩展
 
-- 点击侧栏「系统设置」，右侧页面会显示「添加标签、批量编辑、背景设置、书签管理」四项功能；进入「书签管理」后可添加书签并直接编辑卡片。侧栏「＋ / 添加」仍用于直接新建文件夹。
-- 左侧分类栏用于切换文件夹。「系统设置」是独立导航页，点击后四项功能会显示在右侧主内容区；「添加标签」和侧栏「＋ / 添加」都可以新建分类。右键点击已有分类可编辑名称/图标或删除。
-- 在「系统设置 → 书签管理」中，直接在书签卡片上编辑、改分类、切换首页显示或删除；界面不使用滑出式弹出菜单。
-- 使用搜索框搜索网页或输入网址；默认搜索服务可在「偏好 → 常规设置」中选择 Bing、Google、百度或 DuckDuckGo。
+在项目根目录运行：
 
-### 背景、设置与数据备份
+```bash
+node scripts/package-extension.mjs
+```
 
-「系统设置」页的「背景设置」可以更换壁纸并调整模糊和遮罩。「偏好 → 常规设置」可调节书签图标尺寸；「偏好 → 时间日期」可设置 12/24 小时制和是否显示秒数。时钟下方会显示公历、农历和当日或下一重要节气；点击日期行可打开日历。设置中的数据页提供 JSON 导出和导入，可用于备份或迁移书签及偏好。
-**未配置云服务时，数据保存在当前浏览器本地。** 配置 Supabase 后，可从侧栏「云同步」注册/登录，同一账号会自动保存书签和偏好，并可在其他设备恢复；自定义壁纸仍只保存在当前浏览器。网页链接本身不会包含个人书签数据；使用同一公开网址的其他人会在自己的浏览器中拥有各自独立的数据。
+脚本把 `shared/` 共享模块复制到扩展包内部，并生成 `dist/nova-chromium-extension.zip`。若直接调试源码，也可先运行此命令，再加载 `extension/` 目录。Chrome 打开 `chrome://extensions`，Edge 打开 `edge://extensions`，开启“开发者模式”，选择“加载已解压的扩展程序”并选中 `extension/`。修改 `shared/` 后重新运行打包脚本以同步扩展副本。
 
+扩展保留原有 `activeTab` 权限，并仅为天气、热榜、一言和壁纸声明所需的服务域名；没有申请读取所有网站的权限。扩展书签和偏好保存在扩展自己的本机存储中，不会自动登录网站账号。
 
-## 登录与跨设备同步（需配置 Supabase）
+## 注册与云同步（重要：沿用原实现）
 
-静态网页本身没有账号数据库；项目已接入 Supabase Auth 与每账号独立的书签 JSON 同步。部署者需要先创建一个 Supabase 项目：
+网站继续使用现有 Supabase Auth 与 `public.bookmark_sync` JSON payload。本次没有更改注册、邮箱验证、登录、密码重置、RLS、表结构或按网址合并书签的逻辑，也不新增数据库表。已登录的 Web 用户会通过原有同步机制保存新增状态字段；无需执行新的 SQL migration。扩展版仍使用自身本地数据。
 
-1. 在 Supabase 项目设置中启用 Email 登录，并配置邮件发送服务；若启用邮箱验证，也请完成相关设置。
-2. 在 Supabase 的 **Authentication → URL Configuration → Redirect URLs** 中加入 `https://nova-6sm.pages.dev/`（或你的实际站点地址）。密码重置邮件会把用户带回当前网页；生产环境建议配置自己的 SMTP 服务。
-3. 在 SQL Editor 执行本仓库的 `supabase-schema.sql`。该表启用 RLS，每个账号只能读取和修改自己的行。
-4. `sync-config.js` 已配置本项目的公开 Supabase URL 与 anon/publishable key；切换到其他 Supabase 项目时，只替换为该项目自己的公开值。不要填入 `service_role` key。
-5. 部署网页；用户在侧栏点「云同步」注册/登录，同一账号登录其他设备后会恢复远端书签。首次登录时本机和云端书签按网址合并。
-6. 忘记密码时，用户可在登录框点击「忘记密码？重置密码」，输入邮箱并主动请求邮件；点击邮件链接返回网页后输入两次新密码即可更新。网站不会自动发送重置邮件；实际发送受 Supabase 邮件服务与速率限制影响。
+继续按本项目现有方式配置 Supabase：在 Supabase 启用 Email 登录，在 Authentication 的 URL Configuration 中添加实际部署网址，执行仓库中的 `supabase-schema.sql`，并按原有 `sync-config.js` 流程注入项目公开 URL 和 anon/publishable key。绝不要把 `service_role` key 放入前端或提交到 Git。配置有效且同步表已存在后，用户从侧栏“云同步”注册/登录；首次同步仍按网址合并书签。忘记密码需要用户主动点击“忘记密码”并在邮件返回页面设置新密码，邮件投递受 Supabase 邮件服务与速率限制影响。
 
-配置有效且已执行 SQL 迁移后，登录按钮才可用于跨设备同步；缺少配置时登录按钮会保持禁用。云端表尚未创建时，登录或同步无法完成。
+原有 JSON 导入/导出入口保留。新增字段位于 `schemaVersion: 2` 与 `nova` 命名空间；缺少新增字段的旧数据会自动补默认值。外部壁纸 URL 可以随 JSON 状态同步；本地上传媒体文件本身只保存在当前浏览器 IndexedDB，不会上传到云端。启用云同步前，建议先导出一份 JSON 备份。
 
-## 部署到 Cloudflare Pages（连接 GitHub，推荐）
+## Cloudflare Pages 自部署
 
-本仓库根目录含有 `index.html`，不需要框架或打包步骤。Cloudflare 官方静态 HTML 指南：[Deploy a static HTML site](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/)；Git 连接说明：[Git integration](https://developers.cloudflare.com/pages/configuration/git-integration/)。
+本仓库根目录含有 `index.html`，无需框架构建。Cloudflare 官方说明：[部署静态 HTML](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/)、[Git 集成](https://developers.cloudflare.com/pages/configuration/git-integration/)。
 
-1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/) 并打开 **Workers & Pages**。
-2. 选择 **Create application → Pages → Import an existing Git repository**，按提示连接 GitHub，并选择 `sincalaway/nova`。
-3. 构建设置填写：
+在 Cloudflare Dashboard 选择 **Workers & Pages → Create application → Pages → Import an existing Git repository**，连接 `sincalaway/nova`。构建配置使用：
 
-   | 设置 | 值 |
-   | --- | --- |
-   | Production branch（生产分支） | `main` |
-   | Framework preset（框架预设） | `None` / 无 |
-   | Build command（构建命令） | `exit 0` |
-   | Build output directory（输出目录） | `.` |
+| 设置 | 值 |
+| --- | --- |
+| Production branch | `main` |
+| Framework preset | `None` |
+| Build command | `exit 0` |
+| Build output directory | `.` |
 
-4. 开始部署。完成后，Cloudflare 会提供 `项目名.pages.dev` 网址；可在 Pages 项目设置中绑定自定义域名。
-5. 仓库 `main` 分支后续每次推送都会触发自动部署；提交到其他分支或 PR 可用于预览（依 Pages 项目配置而定）。
+之后按 Pages 指引部署或绑定自定义域名。修改 `main` 后 Git 集成会自动部署。Git 集成和 Direct Upload 是不同项目创建方式，本仓库应沿用现有 Git 集成设置。
 
-> **注意：** Pages 的 Git 集成和 Direct Upload 是不同的项目创建方式。Cloudflare 文档说明，使用 Git 集成后不能再把同一 Pages 项目切换为 Direct Upload；本仓库推荐保持 Git 集成。
+## 第三方 API、许可与注意事项
 
-## 文件说明
+天气使用 [Open-Meteo 天气接口](https://open-meteo.com/en/docs) 和[地名查询接口](https://open-meteo.com/en/docs/geocoding-api)。通常无需 API key；官方免费服务面向非商业用途、有请求限制且不保证 uptime。商业部署应先查看[价格和条款](https://open-meteo.com/en/pricing)，或更换为自建/授权服务。天气只使用用户输入的城市，或用户主动点击并授权后的浏览器定位。
 
-- `index.html`：完整主页（HTML、样式与交互逻辑）。
-- `galaxy.jpg`：星空背景图。
-- `logo.png`：项目标识资源。
-- `logo-horizontal.png`、`logo-vertical.png`、`logo-square.png`、`logo-circle.png`：横版、竖版、方形和圆形 Logo 变体，按显示位置使用。
-- `sync-config.js`：Supabase 公共项目 URL 与 anon/publishable key 配置。
-- `supabase-schema.sql`：每账号云同步表及行级安全策略。
+热搜使用 [VVhan 开源热榜聚合接口](https://www.vvhan.com/article/zhihu-baidu-weibo-api-kaiyuan)，并非百度、微博或知乎官方稳定 API；源站改版、限流、CORS 或服务策略变化可能导致暂时不可用。一言使用 [Hitokoto 官方接口](https://hitokoto.cn/usage)，按本地日期缓存；高流量站点应遵循其调用建议。服务地址、字段与说明见 [`docs/API-SOURCES.md`](docs/API-SOURCES.md)。
 
-## Chrome / Edge 浏览器扩展
+壁纸列表的外部图片从 Unsplash 链接加载；可自行替换配置或只使用仓库内的 `galaxy.jpg`。使用外部图片时请遵循来源站的许可与流量条款。嵌入窗口能否打开由目标站点 CSP / `X-Frame-Options` 决定；失败时使用“新标签打开”。天气、热榜和一言依赖互联网；书签、笔记、月历、主题和 JSON 本地备份可离线使用。
 
-本仓库同时提供 Chromium Manifest V3 浏览器扩展。加载扩展后，新建标签页会显示这套书签主页；点击工具栏中的“岁瞬网页书签”图标，可把当前网页标题和网址带入添加书签表单。
+## 项目结构与架构
 
-### 安装
+```text
+index.html                    # 保持原静态 Web 部署入口
+sync-config.js                # 原有 Supabase 配置入口
+supabase-schema.sql           # 原有同步表与 RLS（本次不改）
+shared/model.js               # 默认值和旧数据兼容归一化
+shared/assets.js              # IndexedDB 媒体存储
+shared/dashboard.js           # Web/扩展共用主页增强层
+extension/                    # Manifest V3 新标签页扩展
+scripts/package-extension.mjs # 复制共享模块并打包扩展
+docs/                         # 架构、数据模型及 API 来源说明
+```
 
-1. 在本仓库中找到 `extension/` 文件夹，或下载并解压浏览器扩展发行包。
-2. 在 Chrome 打开 `chrome://extensions`，或在 Edge 打开 `edge://extensions`。
-3. 开启“开发者模式”，选择“加载已解压的扩展程序”，并选中 `extension/` 文件夹。
-4. 打开新标签页即可使用；可在浏览器扩展菜单中将扩展固定到工具栏，方便收藏当前网页。
-
-扩展不申请读取所有网站数据的权限。只有在你主动点击扩展图标时，才使用 `activeTab` 读取当前标签页标题和网址；书签与偏好保存在扩展自己的浏览器本地存储中。收藏仅支持普通 `http` / `https` 网页，浏览器内部页面（如 `chrome://`）不能收藏。站点图标通过 Google S2 favicon 服务加载；书签正文和设置仍保存在本地。
-
-### 网站版数据迁移与注意事项
-
-网站版与扩展版属于不同来源，不会自动共享本地数据。请在网站版打开“偏好 → 数据变动记录”，选择“导出数据”；再到扩展版新标签页的“偏好 → 数据变动记录 → 导入数据”，选择导出的 JSON 文件。扩展不能替换无痕窗口的新标签页，数据也不会自动跨设备同步；卸载前请先导出 JSON 备份。
+完整设计见 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)，结构化字段约定见 [`docs/data-model.json`](docs/data-model.json)。
