@@ -259,7 +259,10 @@
                   "weather",
                   "hotlist",
                   "calendar",
-                  "dailyQuote"
+                  "dailyQuote",
+                  "countdown",
+                  "anniversary",
+                  "todo"
                 ]
               },
               "enabled": {
@@ -307,6 +310,46 @@
             },
             "additionalProperties": true
           }
+        },
+        "todos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "text", "done"],
+            "properties": {
+              "id": { "type": "string" },
+              "text": { "type": "string", "maxLength": 240 },
+              "done": { "type": "boolean" },
+              "updatedAt": { "type": "string", "format": "date-time" }
+            },
+            "additionalProperties": true
+          }
+        },
+        "tools": {
+          "type": "object",
+          "properties": {
+            "whiteboard": {
+              "type": "object",
+              "properties": {
+                "strokes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["color", "width", "points"],
+                    "properties": {
+                      "id": { "type": "string" },
+                      "color": { "type": "string" },
+                      "width": { "type": "number", "minimum": 1, "maximum": 24 },
+                      "points": { "type": "array", "items": { "type": "array", "items": { "type": "number", "minimum": 0, "maximum": 1 }, "minItems": 2, "maxItems": 2 } }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
         }
       },
       "additionalProperties": true

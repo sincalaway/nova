@@ -25,12 +25,20 @@
     "https://geocoding-api.open-meteo.com/*",
     "https://v1.hitokoto.cn/*",
     "https://api.vvhan.com/*",
-    "https://images.unsplash.com/*"
+    "https://images.unsplash.com/*",
+    "https://ipwho.is/*",
+    "https://*.supabase.co/*",
+    "https://huggingface.co/*",
+    "https://*.huggingface.co/*",
+    "https://*.hf.co/*",
+    "https://*.xethub.hf.co/*",
+    "https://cas-bridge.xethub.hf.co/*",
+    "https://cdn-lfs.huggingface.co/*"
   ],
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; img-src 'self' data: https:; media-src 'self' blob: https:; connect-src 'self' https://api.open-meteo.com https://geocoding-api.open-meteo.com https://v1.hitokoto.cn https://api.vvhan.com; style-src 'self' 'unsafe-inline';"
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://api.open-meteo.com https://geocoding-api.open-meteo.com https://v1.hitokoto.cn https://api.vvhan.com https://ipwho.is https://*.supabase.co https://huggingface.co https://*.huggingface.co https://*.hf.co https://*.xethub.hf.co https://cas-bridge.xethub.hf.co https://cdn-lfs.huggingface.co; frame-src https://www.latexlive.com; style-src 'self' 'unsafe-inline';"
   }
 }

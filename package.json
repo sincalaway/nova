@@ -5,18 +5,22 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/copy-third-party-notices.mjs",
     "build": "vite build",
     "preview": "vite preview",
-    "build:extension": "node scripts/package-extension.mjs"
+    "build:extension": "node scripts/package-extension.mjs",
+    "test": "node --test"
   },
   "dependencies": {
+    "onnxruntime-web": "^1.31.1",
     "vue": "^3.5.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.0",
+    "esbuild": "^0.28.2",
     "vite": "^6.0.0"
   },
   "allowScripts": {
-    "esbuild@0.25.12": true
+    "esbuild@0.28.2": true
   }
 }

@@ -12,7 +12,10 @@
     { id: 'widget-weather', type: 'weather', enabled: true, order: 1, config: { city: '', latitude: null, longitude: null } },
     { id: 'widget-hotlist', type: 'hotlist', enabled: true, order: 2, config: { source: 'baidu' } },
     { id: 'widget-calendar', type: 'calendar', enabled: true, order: 3, config: {} },
-    { id: 'widget-quote', type: 'dailyQuote', enabled: true, order: 4, config: { day: '', text: '', from: '' } }
+    { id: 'widget-quote', type: 'dailyQuote', enabled: true, order: 4, config: { day: '', text: '', from: '' } },
+    { id: 'widget-countdown', type: 'countdown', enabled: false, order: 5, config: { title: '', dateTime: '', repeat: 'none', textColor: '#ffffff', backgroundColor: '#294365', backgroundImage: '', mask: 25 } },
+    { id: 'widget-anniversary', type: 'anniversary', enabled: false, order: 6, config: { title: '', date: '', textColor: '#ffffff', backgroundColor: '#58394f', backgroundImage: '', mask: 25 } },
+    { id: 'widget-todo', type: 'todo', enabled: false, order: 7, config: {} }
   ];
   const wallpapers = [
     { id: 'nebula-local', name: '星云（内置）', category: '星空', url: 'galaxy.jpg', credit: '项目内置图片' },
@@ -42,7 +45,9 @@
     searchEngines: engines.map(item => ({ ...item })),
     searchHistory: [],
     widgets: widgets.map(item => ({ ...item, config: { ...item.config } })),
-    webApps: []
+    webApps: [],
+    todos: [],
+    tools: { whiteboard: { strokes: [] } }
   });
   function safeHttpUrl(value) {
     try {
@@ -61,6 +66,14 @@
     state.schemaVersion = 2;
     const base = defaultNova();
     const old = state.nova && typeof state.nova === 'object' ? state.nova : {};
+    const storedWidgets = Array.isArray(old.widgets) ? old.widgets : [];
+    const mergedWidgets = base.widgets.map(definition => {
+      const current = storedWidgets.find(item => item && (item.type === definition.type || item.id === definition.id));
+      return current ? { ...definition, ...current, config: { ...definition.config, ...(current.config || {}) } } : { ...definition, config: { ...definition.config } };
+    });
+    for (const item of storedWidgets) {
+      if (item && !base.widgets.some(definition => definition.type === item.type || definition.id === item.id)) mergedWidgets.push({ ...item, config: { ...(item.config || {}) } });
+    }
     state.nova = {
       ...base,
       ...old,
@@ -68,8 +81,10 @@
       settings: { ...base.settings, ...(old.settings || {}) },
       searchEngines: Array.isArray(old.searchEngines) ? old.searchEngines : base.searchEngines,
       searchHistory: Array.isArray(old.searchHistory) ? old.searchHistory.slice(0, 30) : [],
-      widgets: Array.isArray(old.widgets) ? old.widgets.map(item => ({ ...item, config: { ...(item.config || {}) } })) : base.widgets,
-      webApps: Array.isArray(old.webApps) ? old.webApps : []
+      widgets: mergedWidgets,
+      webApps: Array.isArray(old.webApps) ? old.webApps : [],
+      todos: Array.isArray(old.todos) ? old.todos : (Array.isArray(state.todos) ? state.todos : []),
+      tools: { ...base.tools, ...(old.tools || {}), whiteboard: { ...base.tools.whiteboard, ...(old.tools?.whiteboard || {}) } }
     };
     state.nova.searchEngines = state.nova.searchEngines.filter(engine => engine && engine.name && engine.template && engine.template.includes('{query}') && safeHttpUrl(engine.template.replace('{query}', 'test')));
     const legacyEngine = String(state.engine || '');

@@ -12,6 +12,8 @@ onMounted(async () => {
   await import('../shared/model.js')
   await import('../shared/assets.js')
   await import('../shared/dashboard.js')
+  window.NovaLoadBackgroundEngine = () => import('../shared/background-removal.js')
+  await import('../shared/feature-suite.js')
 })
 </script>
 

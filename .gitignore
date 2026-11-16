@@ -1,2 +1,8 @@
 node_modules/
 /build/
+/public/THIRD_PARTY_NOTICES.md
+/extension/background-removal.bundle.js
+/extension/feature-suite.bundle.js
+/extension/ort-wasm-simd-threaded.asyncify.mjs
+/extension/ort-wasm-simd-threaded.asyncify.wasm
+/extension/sync-config.js

@@ -1,16 +1,17 @@
 # Nova 浏览器扩展
 
-本目录提供 Chromium Manifest V3 扩展，可用于 Google Chrome、Microsoft Edge 等兼容浏览器。它把 Nova 起始页替换为新标签页，保留“点击扩展图标，把当前网页带入书签表单”的原有行为；新增主页组件、聚合搜索、壁纸、书签导入和 WebApp 窗口。
+本目录提供 Chromium Manifest V3 扩展，可用于 Google Chrome、Microsoft Edge 等兼容浏览器。它把岁瞬起始页设为新标签页，保留“点击扩展图标，把当前网页带入书签表单”的原有行为；主页组件包括倒计时、纪念日和待办，并提供在线白板、实时字数统计、代码高亮、本机去背、IP 查询与 LaTeX 工具箱。
 
 ## 从项目源码生成扩展包
 
 在仓库根目录运行：
 
 ```bash
-node scripts/package-extension.mjs
+npm ci
+npm run build:extension
 ```
 
-此命令会将根目录 `shared/` 模块复制到本目录 `shared/`，输出 `dist/nova-chromium-extension.zip`。也可以直接加载本目录 `extension/`；编辑根目录共享代码后，先重新执行打包脚本以同步副本。
+此命令会将根目录共享模块复制到本目录，按需编译工具箱和 ONNX 引擎、附带 WebAssembly 运行时及第三方许可，并输出 `dist/nova-chromium-extension.zip`。也可以加载本目录 `extension/`；编辑根目录共享代码后，先重新执行打包脚本以同步副本。
 
 ## 安装
 
@@ -21,13 +22,13 @@ node scripts/package-extension.mjs
 
 ## 权限与数据
 
-扩展保留 `activeTab`：仅在用户主动点击扩展图标时读取当前标签页标题和网址。没有请求读取所有网站的权限。Manifest 额外列出天气、地名查询、Hitokoto、热榜与 Unsplash 图片所需的精确域名。书签、搜索历史、布局、卡片和偏好保存在该浏览器扩展的本地存储；上传的壁纸/视频二进制保存在 IndexedDB。扩展不复用网站版 Supabase 登录会话。
+扩展保留 `activeTab`：仅在用户主动点击扩展图标时读取当前标签页标题和网址，没有读取所有网站的权限。Manifest 仅额外声明天气、热榜、一言、IP 查询、Supabase 同步、LaTeX iframe、壁纸和模型下载所需域名。默认数据仍在当前扩展本地；可在“工具箱 → 跨设备同步”中单独登录同一 Supabase 账号，不复用网页会话或上传 `service_role` 密钥。待办、白板笔迹和偏好会随登录账户同步；壁纸文件不上传。
 
-站点 favicon 继续使用原有 Google S2 服务。天气、热榜和一言受互联网、CORS 与第三方服务可用性影响；API 来源和限制请看[项目 API 来源文档](https://github.com/sincalaway/nova/blob/main/docs/API-SOURCES.md)。
+站点 favicon 继续使用原有 Google S2 服务。天气、热榜、一言、IP 查询和 LaTeX 受网络与第三方服务影响；点击 IP 查询会把当前或输入的 IP 发给 IPWhois.io，位置只作近似估算。智能去背需首用下载约 94 MiB 模型，图片留在本机；不支持 WebGPU 时仍可用纯色抠除。API、模型和许可来源见[项目 API 来源文档](https://github.com/sincalaway/nova/blob/main/docs/API-SOURCES.md)及 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)。
 
 ## 网页与扩展之间的数据迁移
 
-网页和扩展属于不同的来源，浏览器不会自动共享 localStorage。可在网页原有设置页导出 JSON，再到扩展原有数据设置页导入。跨设备云同步仍是网站版现有 Supabase 功能；扩展本地数据不会自动同步。
+网页和扩展属于不同来源，浏览器不会自动共享 localStorage。可在任一端导出 JSON 到另一端导入；也可分别在网页和扩展登录同一 Supabase 账号。扩展首次看到云端数据时会明确询问合并、云端覆盖或本机覆盖；后续自动检查更新。卸载扩展前仍建议导出 JSON 备份。
 
 ## 已知限制
 

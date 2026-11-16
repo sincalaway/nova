@@ -21,3 +21,22 @@
 ## 壁纸图像
 
 - Unsplash 图片由 `shared/model.js` 中预置的公开图片 URL 加载；本项目不将图片复制进仓库。可直接使用项目内置 `galaxy.jpg`、选择这些链接，或在设置中粘贴自己的 HTTP(S) 图片/视频地址。使用外部图片时，请遵循图片来源方的许可和流量条款；自部署者可以替换壁纸列表。
+
+
+## IP 查询：IPWhois.io
+
+- 官方 API 文档：https://ipwhois.io/documentation
+- 页面向 HTTPS 端点 `https://ipwho.is/{IP}` 请求 JSON；省略地址表示查询当前公网 IP。当前工具只在用户点击“查询”后发送请求，也支持用户输入的 IPv4 / IPv6，并仅请求 IP、国家/地区/城市、运营商、组织和时区字段。
+- 官方免费接口文档列出每个调用域名每天 1,000 次限额，CORS 请求按来源域名计数；超过限额会返回 HTTP 429。IP 地理位置是数据库估算，不等同于 GPS，且可能不准确。
+- 请求会让第三方获得被查询的 IP；工具不读取浏览器定位、不把结果写入岁瞬状态。来源：官方[接口文档](https://ipwhois.io/documentation)与[服务条款](https://ipwhois.io/terms)。
+
+## LaTeX 公式编辑器：LaTeXLive
+
+- 官方入口：https://www.latexlive.com/
+- 工具箱以 iframe 嵌入，另提供新标签页打开入口。该站点可能通过 CSP / `X-Frame-Options` 禁止嵌入；此时用户可选择新标签页继续使用。岁瞬不读取或保存用户在第三方编辑器中的内容。
+
+## 背景移除：本机 BiRefNet Lite + ONNX Runtime Web
+
+- 模型卡与许可：https://huggingface.co/studioludens/birefnet-lite-512 （MIT）；运行时与许可：https://github.com/microsoft/onnxruntime （ONNX Runtime Web 1.31.1，MIT）。
+- 首次点击本地智能去背时，按固定模型 revision 从 Hugging Face 下载约 94 MiB 的 BiRefNet Lite 512 ONNX 权重；网页生产包还会按需下载约 28 MB 的 ONNX WebAssembly runtime。扩展打包时随安装包附带 runtime WASM。图片只在用户设备上解码、推理和生成 PNG，不上传至模型服务。
+- 需要 WebGPU 支持；不支持的设备仍可用颜色采样与容差完成本机纯色抠除。模型和 runtime 代码按 MIT 许可分发，相关许可证与组件来源见 [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md)。

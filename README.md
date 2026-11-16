@@ -10,9 +10,10 @@ Nova 是本地优先、可自部署的个人主页与 Chromium 新标签页扩�
 | 书签 | 添加/编辑/删除、常用站点目录、自定义图标 URL、主分类与多分类、浏览器书签 HTML 导入、拖拽排序；原有图标大小和卡片布局选项继续可用。 |
 | 搜索 | Bing、Google、百度、搜狗、DuckDuckGo、自定义搜索模板、Tab / Shift+Tab 切换、快捷翻译、本地建议和搜索历史（均可开关）。 |
 | 壁纸 | 内置分类壁纸库、随机切换、自定义图片/视频 URL、本地图片/视频上传、模糊和遮罩调整。大文件存在 IndexedDB，不放入 localStorage。 |
-| 组件 | 可添加/移除并拖拽排序：记事本（纯文本/简易 Markdown）、天气、热搜、月历、每日一言。 |
+| 组件 | 可添加/移除并拖拽排序：记事本（纯文本/简易 Markdown）、天气、热搜、月历、每日一言、倒计时、纪念日（支持重复规则与自定义背景），以及可筛选的待办清单。 |
 | WebApp | 书签可选内嵌窗口打开；Dock、最小化、全屏、新标签页打开。目标网站禁止 iframe 时改用新标签页。 |
-| 数据 | 原有 JSON 导入/导出、Supabase 账号注册和书签云同步行为。 |
+| 工具箱 | 在线白板、实时字数统计与文本清理、代码高亮、本机 AI / 纯色去背、IP 地址地理查询、LaTeXLive 公式编辑器。 |
+| 数据 | JSON 备份导入/导出；网站与 Chromium 扩展可分别登录同一 Supabase 账号，通过既有 `bookmark_sync` 表同步书签、组件和偏好。 |
 
 ## 本地运行 Web
 
@@ -37,15 +38,15 @@ node scripts/package-extension.mjs
 
 脚本把 `shared/` 共享模块复制到扩展包内部，并生成 `dist/nova-chromium-extension.zip`。若直接调试源码，也可先运行此命令，再加载 `extension/` 目录。Chrome 打开 `chrome://extensions`，Edge 打开 `edge://extensions`，开启“开发者模式”，选择“加载已解压的扩展程序”并选中 `extension/`。修改 `shared/` 后重新运行打包脚本以同步扩展副本。
 
-扩展保留原有 `activeTab` 权限，并仅为天气、热榜、一言和壁纸声明所需的服务域名；没有申请读取所有网站的权限。扩展书签和偏好保存在扩展自己的本机存储中，不会自动登录网站账号。
+扩展保留原有 `activeTab` 权限，并仅为天气、热榜、一言、壁纸、IP 查询、Supabase 和按需下载的去背模型声明服务域名；没有申请读取所有网站的权限。扩展书签和偏好仍保存在扩展自己的本机存储中；要跨设备使用，请在扩展侧栏的“工具箱 → 跨设备同步”中单独登录，不共享网站登录令牌。
 
 ## 注册与云同步（重要：沿用原实现）
 
-网站继续使用现有 Supabase Auth 与 `public.bookmark_sync` JSON payload。本次没有更改注册、邮箱验证、登录、密码重置、RLS、表结构或按网址合并书签的逻辑，也不新增数据库表。已登录的 Web 用户会通过原有同步机制保存新增状态字段；无需执行新的 SQL migration。扩展版仍使用自身本地数据。
+网站继续使用现有 Supabase Auth 与 `public.bookmark_sync` JSON payload。本次没有更改网站注册、邮箱验证、登录、密码重置、RLS 或表结构，也不新增数据库表。扩展单独使用 Supabase Auth 的公开 REST 接口，以同一 `bookmark_sync` 表、用户令牌和 RLS 同步；首次连接提供合并/云端覆盖/本机覆盖选项，之后定期拉取并合并两端同时出现的新增或修改。不会上传 `service_role` 密钥，也不会共享网站会话。
 
 继续按本项目现有方式配置 Supabase：在 Supabase 启用 Email 登录，在 Authentication 的 URL Configuration 中添加实际部署网址，执行仓库中的 `supabase-schema.sql`，并按原有 `sync-config.js` 流程注入项目公开 URL 和 anon/publishable key。绝不要把 `service_role` key 放入前端或提交到 Git。配置有效且同步表已存在后，用户从侧栏“云同步”注册/登录；首次同步仍按网址合并书签。忘记密码需要用户主动点击“忘记密码”并在邮件返回页面设置新密码，邮件投递受 Supabase 邮件服务与速率限制影响。
 
-原有 JSON 导入/导出入口保留。新增字段位于 `schemaVersion: 2` 与 `nova` 命名空间；缺少新增字段的旧数据会自动补默认值。外部壁纸 URL 可以随 JSON 状态同步；本地上传媒体文件本身只保存在当前浏览器 IndexedDB，不会上传到云端。启用云同步前，建议先导出一份 JSON 备份。
+原有 JSON 导入/导出入口保留。新增倒计时、纪念日、待办和白板字段位于 `schemaVersion: 2` 与 `nova` 命名空间；旧数据会按类型补入默认关闭的卡片，并保留现有书签、笔记和设置。白板笔迹、待办、事件规则及偏好使用现有 JSON payload 同步；本地上传的壁纸原文件只保存在当前浏览器 IndexedDB，不会上传。启用云同步前，建议先导出 JSON 备份；双端删除不含墓碑记录，冲突时可能恢复另一端仍保留的项目。
 
 ## Cloudflare Pages 自部署
 
@@ -68,7 +69,9 @@ Cloudflare Pages 使用 Vue/Vite 静态构建产物。Cloudflare 官方说明：
 
 热搜使用 [VVhan 开源热榜聚合接口](https://www.vvhan.com/article/zhihu-baidu-weibo-api-kaiyuan)，并非百度、微博或知乎官方稳定 API；源站改版、限流、CORS 或服务策略变化可能导致暂时不可用。一言使用 [Hitokoto 官方接口](https://hitokoto.cn/usage)，按本地日期缓存；高流量站点应遵循其调用建议。服务地址、字段与说明见 [`docs/API-SOURCES.md`](docs/API-SOURCES.md)。
 
-壁纸列表的外部图片从 Unsplash 链接加载；可自行替换配置或只使用仓库内的 `galaxy.jpg`。使用外部图片时请遵循来源站的许可与流量条款。嵌入窗口能否打开由目标站点 CSP / `X-Frame-Options` 决定；失败时使用“新标签打开”。天气、热榜和一言依赖互联网；书签、笔记、月历、主题和 JSON 本地备份可离线使用。
+壁纸列表的外部图片从 Unsplash 链接加载；可自行替换配置或只使用仓库内的 `galaxy.jpg`。使用外部图片时请遵循来源站的许可与流量条款。IP 查询把当前公网 IP 或用户输入的 IP 发给 [IPWhois.io](https://ipwhois.io/documentation)；免费接口限每个调用域名每日 1,000 次，地理位置仅为近似估算。LaTeX 使用 [LaTeXLive](https://www.latexlive.com/)；网站 CSP 或浏览器可能阻止 iframe，可改在新标签打开。天气、热榜、一言、IP 和 LaTeX 依赖互联网；白板、待办、字数统计、代码处理与基础书签可离线使用。
+
+智能抠图使用 MIT 许可的 [BiRefNet Lite 512 模型](https://huggingface.co/studioludens/birefnet-lite-512) 与 ONNX Runtime Web；模型首用时按需下载约 94 MiB，网页还需约 28 MB WebAssembly 推理运行时（扩展包随附运行时）。原图不上传；不支持 WebGPU 时可使用纯色抠除。第三方许可和来源见 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) 与 [`docs/API-SOURCES.md`](docs/API-SOURCES.md)。
 
 ## 项目结构与架构
 
