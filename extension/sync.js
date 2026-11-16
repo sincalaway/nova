@@ -202,8 +202,13 @@
     if (file.size > 25 * 1024 * 1024) return setStatus('备份文件过大（超过 25 MB）。', 'error');
     const reader = new FileReader();
     reader.onload = async () => {
-      try { const incoming = root.NovaModel?.normalize(JSON.parse(String(reader.result || '{}'))); if (!incoming || !Array.isArray(incoming.bookmarks)) throw new Error('这不是有效的岁瞬 JSON 备份。');
-        applyState(mergeStates(incoming, currentState())); setStatus('备份已与本机数据合并；如已登录，稍后会自动同步。'); toast('备份已导入并合并'); if (session) schedule();
+      try {
+        const raw = JSON.parse(String(reader.result || '{}'));
+        if (!raw || !Array.isArray(raw.bookmarks)) throw new Error('这不是有效的岁瞬 JSON 备份。');
+        const incoming = root.NovaModel?.normalize(raw);
+        if (!incoming || !root.NovaSyncMerge?.mergeImportedState) throw new Error('安全合并模块未加载，请刷新后重试。');
+        applyState(root.NovaSyncMerge.mergeImportedState(currentState(), incoming));
+        setStatus('备份已与本机数据合并，已有内容和偏好优先保留；如已登录，稍后会自动同步。'); toast('备份已导入并合并'); if (session) schedule();
       } catch (error) { setStatus(error.message || '无法读取备份文件。', 'error'); }
     };
     reader.onerror = () => setStatus('无法读取备份文件。', 'error'); reader.readAsText(file);

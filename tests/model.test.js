@@ -103,3 +103,51 @@ test('cloud merge preserves existing policy while joining device-specific edits'
   assert.equal(merged.nova.tools.whiteboard.strokes.filter(item => item.id === 'shared-stroke').length, 1);
   assert.ok(merged.nova.tools.whiteboard.strokes.some(item => item.id === 'local-stroke'));
 });
+
+test('backup import adds missing data without overwriting current bookmarks or settings', () => {
+  const current = {
+    bookmarks: [{ name: '本机名称', url: 'https://example.com/', category: '本机分类', home: true, layout: '2x2' }],
+    categories: [{ name: '本机分类', icon: '★' }],
+    nova: {
+      settings: { theme: 'light', customSetting: 'keep' },
+      widgets: [{ id: 'local-note', type: 'notes', enabled: true, order: 0, config: { text: '本机笔记', preview: true, localOnly: true } }],
+      todos: [{ id: 'todo-1', text: '本机待办', done: true }],
+      searchHistory: ['本机查询'],
+      tools: { whiteboard: { strokes: [{ id: 'local-stroke', points: [[0.1, 0.2]] }] } }
+    }
+  };
+  const incoming = {
+    bookmarks: [
+      { name: '备份名称', url: 'https://example.com', category: '备份分类', home: false },
+      { name: '新书签', url: 'https://new.example/', category: '备份分类' }
+    ],
+    categories: [{ name: '本机分类', icon: '备份图标' }, { name: '备份分类', icon: '✦' }],
+    nova: {
+      settings: { theme: 'dark', importedSetting: 'available' },
+      widgets: [{ id: 'backup-note', type: 'notes', enabled: false, order: 4, config: { text: '备份笔记', importedOnly: true } }],
+      todos: [{ id: 'todo-1', text: '备份待办', done: false }, { id: 'todo-2', text: '新待办', done: false }],
+      searchHistory: ['备份查询'],
+      tools: { whiteboard: { strokes: [{ id: 'backup-stroke', points: [[0.8, 0.9]] }] } }
+    }
+  };
+  const originalCurrent = structuredClone(current);
+  const originalIncoming = structuredClone(incoming);
+
+  const result = NovaSyncMerge.mergeImportedState(current, incoming);
+
+  assert.equal(result.bookmarks[0].name, '本机名称');
+  assert.equal(result.bookmarks[0].home, true);
+  assert.equal(result.bookmarks[0].layout, '2x2');
+  assert.ok(result.bookmarks.some(item => item.url === 'https://new.example/'));
+  assert.deepEqual(result.categories.map(item => item.name), ['本机分类', '备份分类']);
+  assert.equal(result.categories[0].icon, '★');
+  assert.equal(result.nova.settings.theme, 'light');
+  assert.equal(result.nova.settings.customSetting, 'keep');
+  assert.equal(result.nova.widgets.find(item => item.type === 'notes').config.text, '本机笔记');
+  assert.equal(result.nova.todos.find(item => item.id === 'todo-1').done, true);
+  assert.ok(result.nova.todos.some(item => item.id === 'todo-2'));
+  assert.ok(result.nova.tools.whiteboard.strokes.some(item => item.id === 'local-stroke'));
+  assert.ok(result.nova.tools.whiteboard.strokes.some(item => item.id === 'backup-stroke'));
+  assert.deepEqual(current, originalCurrent);
+  assert.deepEqual(incoming, originalIncoming);
+});

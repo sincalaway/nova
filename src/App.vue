@@ -10,6 +10,7 @@ onMounted(async () => {
   // the page shell moves to Vue. Load in the same order as the former scripts.
   await import('./legacy/site-app.js')
   await import('../shared/model.js')
+  await import('../shared/sync-merge.js')
   await import('../shared/assets.js')
   await import('../shared/dashboard.js')
   window.NovaLoadBackgroundEngine = () => import('../shared/background-removal.js')
@@ -49,7 +50,7 @@ onMounted(async () => {
     </header>
     <div class="system-settings-grid" aria-label="系统设置功能">
       <button type="button" class="system-action-card" data-system-action="add-tag"><span class="system-card-icon icon-tag" aria-hidden="true">＋</span><span class="system-card-copy"><strong>添加标签</strong><small>新建分类文件夹，为书签建立清晰的归属。</small></span><span class="system-card-arrow" aria-hidden="true">↗</span></button>
-      <button type="button" class="system-action-card" data-system-action="batch-edit"><span class="system-card-icon icon-batch" aria-hidden="true">☷</span><span class="system-card-copy"><strong>批量编辑</strong><small>在同一处快速修改多条书签的名称、网址和分类。</small></span><span class="system-card-arrow" aria-hidden="true">↗</span></button>
+      <button type="button" class="system-action-card" data-system-action="data-backup"><span class="system-card-icon icon-batch" aria-hidden="true">▣</span><span class="system-card-copy"><strong>数据备份</strong><small>导出本机数据，或合并导入备份并保留现有内容。</small></span><span class="system-card-arrow" aria-hidden="true">↗</span></button>
       <button type="button" class="system-action-card" data-system-action="background"><span class="system-card-icon icon-background" aria-hidden="true">◈</span><span class="system-card-copy"><strong>背景设置</strong><small>更换主页壁纸，细调背景模糊与遮罩效果。</small></span><span class="system-card-arrow" aria-hidden="true">↗</span></button>
       <button type="button" class="system-action-card" data-system-action="bookmarks"><span class="system-card-icon icon-bookmarks" aria-hidden="true">▤</span><span class="system-card-copy"><strong>书签管理</strong><small>查看并整理全部书签，支持添加、编辑和移动。</small></span><span class="system-card-arrow" aria-hidden="true">↗</span></button>
     </div>
@@ -73,7 +74,7 @@ onMounted(async () => {
     <div class="field"><label for="bookmarkName">名称</label><input id="bookmarkName" maxlength="32" required placeholder="例如：工作台"></div>
     <div class="field"><label for="bookmarkUrl">网址</label><input id="bookmarkUrl" required placeholder="https://example.com" inputmode="url"></div>
     <div class="field-row"><div class="field"><label for="bookmarkCategory">分类</label><select id="bookmarkCategory"></select></div><div class="field"><label for="bookmarkIcon">图标 / Emoji</label><input id="bookmarkIcon" maxlength="5" placeholder="自动加载网站图标"></div></div>
-    <div class="modal-actions"><button class="danger-btn" type="button" id="deleteBookmark">删除</button><button class="cancel-btn" type="button" id="cancelBookmark">取消</button><button class="save-btn" type="submit">保存</button></div>
+    <div class="modal-actions"><button class="cancel-btn" type="button" id="cancelBookmark">取消</button><button class="save-btn" type="submit">保存</button></div>
   </form>
 </div>
 <div class="category-overlay" id="categoryOverlay" role="dialog" aria-modal="true" aria-labelledby="categoryTitle">
@@ -81,7 +82,7 @@ onMounted(async () => {
     <div class="category-head"><h2 id="categoryTitle">添加标签</h2><button type="button" class="category-close" id="closeCategory" aria-label="关闭">×</button></div>
     <label for="categoryIcon">标签图标</label><input id="categoryIcon" maxlength="5" value="✦" aria-label="文件夹图标">
     <label for="categoryName">标签名称</label><input id="categoryName" maxlength="16" required placeholder="请填写标签名称" aria-label="标签名称">
-    <button class="category-delete danger-btn" id="deleteCategory" type="button">删除文件夹</button><button class="category-save" id="categorySave" type="submit">保存</button>
+    <button class="category-save" id="categorySave" type="submit">保存</button>
   </form>
 </div>
 <div class="bookmark-context-menu" id="bookmarkContextMenu" role="menu" aria-label="书签操作" aria-hidden="true"></div>
