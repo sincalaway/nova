@@ -242,3 +242,5 @@ body>.rail .rail-category-list{display:flex;flex:0 0 auto;min-height:0;height:au
 body>.rail .rail-category-list::-webkit-scrollbar{display:none}
 body>.workspace .bookmark-grid{max-height:none;overflow:visible;overflow-y:visible}
 body>.workspace .bookmark-manager:not([hidden])+.bookmark-grid{max-height:none;overflow:visible}
+body.nova-minimal{grid-template-columns:minmax(0,1fr)}
+body.nova-minimal>.workspace{grid-column:1}
