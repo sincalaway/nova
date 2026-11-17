@@ -22,7 +22,7 @@ npm run build:extension
 
 ## 权限与数据
 
-扩展保留 `activeTab`：仅在用户主动点击扩展图标时读取当前标签页标题和网址，没有读取所有网站的权限。Manifest 仅额外声明天气、热榜、一言、IP 查询、Supabase 同步、LaTeX iframe、壁纸和模型下载所需域名。默认数据仍在当前扩展本地；可在“工具箱 → 跨设备同步”中单独登录同一 Supabase 账号，不复用网页会话或上传 `service_role` 密钥。待办、白板笔迹和偏好会随登录账户同步；壁纸文件不上传。
+扩展保留 `activeTab`：仅在用户主动点击扩展图标时读取当前标签页标题和网址，没有读取所有网站的权限。Manifest 仅额外声明天气、热榜、一言、IP 查询、Supabase 同步、LaTeX iframe、壁纸和模型下载所需域名。默认数据仍在当前扩展本地；可从侧栏“云同步”直接登录，与岁瞬网页端使用同一 Supabase 账号（两端登录会话彼此独立），无需上传 `service_role` 密钥。待办、白板笔迹和偏好会随登录账户同步；壁纸文件不上传。
 
 站点 favicon 继续使用原有 Google S2 服务。天气、热榜、一言、IP 查询和 LaTeX 受网络与第三方服务影响；点击 IP 查询会把当前或输入的 IP 发给 IPWhois.io，位置只作近似估算。智能去背需首用下载约 94 MiB 模型，图片留在本机；不支持 WebGPU 时仍可用纯色抠除。API、模型和许可来源见[项目 API 来源文档](https://github.com/sincalaway/nova/blob/main/docs/API-SOURCES.md)及 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)。
 

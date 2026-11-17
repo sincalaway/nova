@@ -84,11 +84,15 @@
   }
   function updateDialog() {
     if (!dialog) return;
+    const railButton = $('#railSync');
+    const railLabel = $('#railSyncLabel');
+    if (railLabel) railLabel.textContent = session ? '已登录' : '云同步';
+    if (railButton) { railButton.title = session ? '已登录，点击管理云同步账号' : '登录、注册和同步书签'; railButton.setAttribute('aria-label', railButton.title); }
     $('#nesAuth', dialog).hidden = !!session; $('#nesSignedIn', dialog).hidden = !session;
     $('#nesEmail', dialog).textContent = session?.user?.email || '已登录';
     if (!configured()) { setStatus('云同步尚未配置，请在仓库的 sync-config.js 中检查 Supabase URL 与公钥。', 'error'); return; }
-    if (session) setStatus(`已登录 ${session.user?.email || ''}。本机修改会自动备份；跨设备更新会定期检查。`);
-    else setStatus('登录后可在其他安装了岁瞬的 Chromium 浏览器恢复数据。首次连接会先让你选择合并方式。');
+    if (session) setStatus(`已登录 ${session.user?.email || ''}。本机修改自动备份；岁瞬网页端和其他设备会定期同步。`);
+    else setStatus('在网页端与岁瞬扩展使用同一邮箱账号，即可在设备间共享书签。首次连接会先让你选择合并方式。');
   }
   async function signIn(form) {
     if (!configured()) return setStatus('云同步配置缺失。', 'error');
@@ -222,6 +226,7 @@
     setInterval(() => { if (session && !syncing) synchronize('poll'); }, 30000);
     root.addEventListener('online', () => { if (session) synchronize('reconnect'); });
     root.NovaExtensionSync = { open, schedule, sync: () => synchronize('manual') };
+    $('#railSync')?.addEventListener('click', open);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true }); else init();
 })(window);

@@ -244,3 +244,14 @@ body>.workspace .bookmark-grid{max-height:none;overflow:visible;overflow-y:visib
 body>.workspace .bookmark-manager:not([hidden])+.bookmark-grid{max-height:none;overflow:visible}
 body.nova-minimal{grid-template-columns:minmax(0,1fr)}
 body.nova-minimal>.workspace{grid-column:1}
+
+/* Keep engine names readable and let the footer collapse without losing restore access. */
+.engine{width:90px;min-width:90px;max-width:118px;flex:none;white-space:nowrap;padding-right:5px}
+.chrome-foot{height:26px;padding-right:30px}
+.chrome-foot-toggle{position:absolute;right:6px;top:2px;width:22px;height:22px;border:0;border-radius:7px;background:transparent;color:#69727e;font-size:18px;line-height:1;display:grid;place-items:center}
+.chrome-foot-toggle:hover{background:rgba(30,50,70,.09);color:#1f2e40}
+.chrome-foot-restore{position:fixed;z-index:7;right:8px;bottom:5px;min-width:38px;height:22px;padding:0 8px;border:1px solid rgba(31,47,65,.16);border-radius:12px;background:rgba(248,250,252,.94);color:#394657;font-size:10px;box-shadow:0 2px 9px rgba(0,0,0,.14);cursor:pointer}
+.chrome-foot[hidden],.chrome-foot-restore[hidden]{display:none!important}
+body.footer-hidden .rail{bottom:0}
+body.footer-hidden .workspace{height:100vh}
+@media(max-width:560px){.chrome-foot{height:26px;padding-right:30px}.chrome-foot-toggle{width:24px;height:24px}}

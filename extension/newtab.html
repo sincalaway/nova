@@ -14,6 +14,7 @@
   <a class="rail-brand" href="#home" title="岁瞬网页书签主页"><img src="logo.png" alt="岁瞬"></a>
   <nav class="rail-links" id="railLinks"></nav>
   <div class="rail-bottom">
+    <button id="railSync" type="button" title="登录并同步书签" aria-label="登录并同步书签"><svg viewBox="0 0 24 24"><path d="M7.2 18.5H6a4 4 0 1 1 .6-7.95A5.7 5.7 0 0 1 17.3 9a4.8 4.8 0 0 1 .7 9.5h-1.2"/><path d="M12 12v9m-3-3 3 3 3-3"/></svg><span id="railSyncLabel">云同步</span></button>
     <button id="railAdd" type="button" title="添加文件夹" aria-label="添加文件夹"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>添加</span></button>
     <div class="rail-divider"></div>
     <button id="railSettings" type="button" title="偏好设置" aria-label="偏好设置"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06-1.7 2.94-.09-.02a1.7 1.7 0 0 0-1.72.6l-.05.07h-3.4l-.04-.09a1.7 1.7 0 0 0-1.5-1.04 1.7 1.7 0 0 0-.76.18l-.08.04-2.94-1.7.02-.09a1.7 1.7 0 0 0-.6-1.72l-.07-.05v-3.4l.09-.04a1.7 1.7 0 0 0 1.04-1.5 1.7 1.7 0 0 0-.18-.76l-.04-.08 1.7-2.94.09.02a1.7 1.7 0 0 0 1.72-.6l.05-.07h3.4l.04.09a1.7 1.7 0 0 0 1.5 1.04 1.7 1.7 0 0 0 .76-.18l.08-.04 2.94 1.7-.02.09a1.7 1.7 0 0 0 .6 1.72l.07.05v3.4z"/></svg><span>偏好</span></button>
@@ -45,7 +46,8 @@
   </section>
 </main>
 <div class="dock" aria-label="Dock 书签"><div class="dock-bookmarks" id="dockBookmarks" aria-label="Dock 书签"></div></div>
-<div class="chrome-foot"><a href="https://liukuan.cc/" target="_blank" rel="noopener">岁瞬网页书签</a><span> · 浏览器扩展版</span></div>
+<div class="chrome-foot" id="chromeFoot"><a href="https://nova-6sm.pages.dev/" target="_blank" rel="noopener">岁瞬网页端</a><span> · 浏览器扩展版</span><button type="button" class="chrome-foot-toggle" id="footerToggle" aria-label="隐藏底部栏" aria-controls="chromeFoot" aria-expanded="true" title="隐藏底部栏">×</button></div>
+<button type="button" class="chrome-foot-restore" id="footerRestore" aria-label="显示底部栏" aria-controls="chromeFoot" title="显示底部栏" hidden>岁瞬</button>
 <div class="overlay" id="settingsOverlay" role="dialog" aria-modal="true" aria-label="设置">
   <div class="settings-dialog">
     <aside class="settings-nav">
@@ -84,6 +86,7 @@
 <script src="shared/sync-merge.js" defer></script>
 <script src="sync-config.js" defer></script>
 <script src="sync.js" defer></script>
+<script src="shared/footer-toggle.js" defer></script>
 <script src="background-removal-loader.js" defer></script>
 <script src="feature-suite.bundle.js" defer></script>
 </body>

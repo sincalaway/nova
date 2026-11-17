@@ -15,6 +15,7 @@ onMounted(async () => {
   await import('../shared/dashboard.js')
   window.NovaLoadBackgroundEngine = () => import('../shared/background-removal.js')
   await import('../shared/feature-suite.js')
+  await import('../shared/footer-toggle.js')
 })
 </script>
 
@@ -23,10 +24,10 @@ onMounted(async () => {
 <aside class="rail" aria-label="主导航">
   <a class="rail-brand" href="#home" title="岁瞬网页书签主页"><img :src="'/logo-square.png'" alt="岁瞬" @error="hideBrokenImage"></a>
   <nav class="rail-links" id="railLinks"></nav>
+  <button id="railAccount" class="rail-link rail-sync-entry" type="button" title="登录、注册和同步书签" aria-label="登录、注册和同步书签"><span class="rail-icon rail-icon-sync"><svg viewBox="0 0 24 24"><path d="M7.2 18.5H6a4 4 0 1 1 .6-7.95A5.7 5.7 0 0 1 17.3 9a4.8 4.8 0 0 1 .7 9.5h-1.2"/><path d="M12 12v9m-3-3 3 3 3-3"/></svg></span><span id="syncRailLabel">云同步</span></button>
 </aside>
 <main class="workspace" id="home">
     <div class="top-actions" aria-label="快捷操作">
-    <button id="railAccount" class="top-action" type="button" title="登录并同步书签" aria-label="登录并同步书签"><span class="rail-icon rail-icon-sync"><svg viewBox="0 0 24 24"><path d="M7.2 18.5H6a4 4 0 1 1 .6-7.95A5.7 5.7 0 0 1 17.3 9a4.8 4.8 0 0 1 .7 9.5h-1.2"/><path d="M12 12v9m-3-3 3 3 3-3"/></svg></span><span id="syncRailLabel">云同步</span></button>
     <button id="railAdd" class="top-action" type="button" title="添加文件夹" aria-label="添加文件夹"><span class="rail-icon rail-icon-add"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span>添加</span></button>
 
     <button id="railSettings" class="top-action" type="button" title="偏好设置" aria-label="偏好设置"><span class="rail-icon rail-icon-settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06-1.7 2.94-.09-.02a1.7 1.7 0 0 0-1.72.6l-.05.07h-3.4l-.04-.09a1.7 1.7 0 0 0-1.5-1.04 1.7 1.7 0 0 0-.76.18l-.08.04-2.94-1.7.02-.09a1.7 1.7 0 0 0-.6-1.72l-.07-.05v-3.4l.09-.04a1.7 1.7 0 0 0 1.04-1.5 1.7 1.7 0 0 0-.18-.76l-.04-.08 1.7-2.94.09.02a1.7 1.7 0 0 0 1.72-.6l.05-.07h3.4l.04.09a1.7 1.7 0 0 0 1.5 1.04 1.7 1.7 0 0 0 .76-.18l.08-.04 2.94 1.7-.02.09a1.7 1.7 0 0 0 .6 1.72l.07.05v3.4z"/></svg></span><span>偏好</span></button>
@@ -58,7 +59,8 @@ onMounted(async () => {
   </section>
 </main>
 <div class="dock" aria-label="Dock 书签"><div class="dock-bookmarks" id="dockBookmarks" aria-label="Dock 书签"></div></div>
-<div class="chrome-foot"><a href="https://liukuan.cc/" target="_blank" rel="noopener">岁瞬网页书签</a></div>
+<div class="chrome-foot" id="chromeFoot"><a href="https://nova-6sm.pages.dev/" target="_blank" rel="noopener">岁瞬网页书签</a><button type="button" class="chrome-foot-toggle" id="footerToggle" aria-label="隐藏底部栏" aria-controls="chromeFoot" aria-expanded="true" title="隐藏底部栏">×</button></div>
+<button type="button" class="chrome-foot-restore" id="footerRestore" aria-label="显示底部栏" aria-controls="chromeFoot" title="显示底部栏" hidden>岁瞬</button>
 <div class="overlay" id="settingsOverlay" role="dialog" aria-modal="true" aria-label="设置">
   <div class="settings-dialog">
     <aside class="settings-nav">
@@ -99,7 +101,7 @@ onMounted(async () => {
       <label class="sync-field">密码<input id="syncPassword" type="password" autocomplete="current-password" minlength="8" required placeholder="至少 8 位"></label>
       <div class="sync-actions"><button class="save-btn" id="syncLogin" type="submit">登录并同步</button><button class="cancel-btn" id="syncSignup" type="button">创建账号</button></div>
       <button class="sync-reset-link" id="syncReset" type="button">忘记密码？重置密码</button>
-      <p class="sync-foot">密码由 Supabase Auth 验证；书签数据仅限该账号读取。请在自己的 Supabase 项目中启用邮件验证与安全策略。</p>
+    <p class="sync-foot">在网页端与岁瞬浏览器扩展使用同一邮箱账号，即可在设备间共享书签、分类和偏好。密码由 Supabase Auth 验证；数据仅限该账号读取。</p>
     </div>
     <div id="syncRecovery" hidden>
       <p class="sync-recovery-copy">请设置新密码（至少 8 位），保存后即可用新密码登录。</p>

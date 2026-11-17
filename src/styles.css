@@ -420,3 +420,18 @@ body.nova-minimal #app>.workspace{grid-column:1}
 
 /* Keep native vertical scrolling while using a custom long-press menu. */
 .bookmark-link,.dock-bookmark,.rail-category-link,.category-filter{touch-action:pan-y;-webkit-touch-callout:none}
+
+/* Readable search-engine names, visible cloud login, and a controllable footer. */
+.engine{width:90px;min-width:90px;max-width:118px;flex:none;white-space:nowrap;padding-right:5px}
+.rail-sync-entry{margin-top:auto;flex:none;}
+.chrome-foot{height:26px}
+.chrome-foot-toggle{position:absolute;right:6px;top:2px;width:22px;height:22px;border:0;border-radius:7px;background:transparent;color:#69727e;font-size:18px;line-height:1;display:grid;place-items:center}
+.chrome-foot-toggle:hover{background:rgba(30,50,70,.09);color:#1f2e40}
+.chrome-foot-restore{position:fixed;z-index:7;right:8px;bottom:5px;min-width:38px;height:22px;padding:0 8px;border:1px solid rgba(31,47,65,.16);border-radius:12px;background:rgba(248,250,252,.94);color:#394657;font-size:10px;box-shadow:0 2px 9px rgba(0,0,0,.14);cursor:pointer}
+.chrome-foot[hidden],.chrome-foot-restore[hidden]{display:none!important}
+.rail{bottom:26px}
+.workspace{height:calc(100vh - 26px)}
+body.footer-hidden .rail{bottom:0}
+body.footer-hidden .workspace{height:100vh}
+body.nova-minimal .chrome-foot-restore{display:none!important}
+@media(max-width:560px){.chrome-foot{height:26px}.chrome-foot-toggle{width:24px;height:24px}.rail{bottom:26px}.workspace{height:calc(100vh - 26px)}body.footer-hidden .rail{bottom:0}body.footer-hidden .workspace{height:100vh}}
