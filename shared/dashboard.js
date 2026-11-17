@@ -457,7 +457,7 @@
     if(contextMenu){
       const addWebAppAction=()=>{const openButton=$('[data-context-action="open"]',contextMenu);if(!openButton||$('[data-nova-webapp]',contextMenu))return;const button=document.createElement('button');button.type='button';button.className='context-item';button.dataset.contextAction='webapp';button.dataset.novaWebapp='true';button.innerHTML='<span class="context-icon">▣</span><span>内嵌窗口打开</span>';openButton.after(button);};
       new MutationObserver(addWebAppAction).observe(contextMenu,{childList:true});
-      contextMenu.addEventListener('click',event=>{const button=event.target.closest('[data-nova-webapp]');if(!button)return;event.preventDefault();event.stopPropagation();const bookmark=ensureData().bookmarks[contextBookmarkIndex];if(!bookmark)return;bookmark.openMode='webapp';save();contextMenu.classList.remove('open');contextMenu.setAttribute('aria-hidden','true');openWebApp(bookmark);});
+      contextMenu.addEventListener('click',event=>{const button=event.target.closest('[data-nova-webapp]');if(!button)return;event.preventDefault();event.stopPropagation();const index=Number(contextMenu.dataset.bookmarkIndex);if(!Number.isInteger(index))return;const bookmark=ensureData().bookmarks[index];if(!bookmark)return;bookmark.openMode='webapp';save();contextMenu.classList.remove('open');contextMenu.setAttribute('aria-hidden','true');openWebApp(bookmark);});
     }
     const categorySelect=$('#bookmarkCategory');
     if(categorySelect){categorySelect.addEventListener('change',()=>populateBookmarkExtras());}
