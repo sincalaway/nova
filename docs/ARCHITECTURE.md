@@ -31,7 +31,9 @@ Nova 是本地优先、可自部署的个人起始页，Web 使用 Vue 3 与 Vit
 │   ├── assets.js                 # 本地壁纸 IndexedDB 读写
 │   ├── dashboard.js              # 搜索、卡片、导入、WebApp 和设置增强层
 │   ├── feature-suite.js          # Web/扩展共享工具箱
-│   └── background-removal.js     # 按需加载的 ONNX 本地去背引擎
+│   ├── background-removal-core.js # 去背推理核心
+│   ├── background-removal-web.js  # 网页端按需加载锁定版本 CDN 运行时
+│   └── background-removal.js      # 扩展端本地 ONNX 运行时入口
 ├── extension/
 │   ├── newtab.html               # 新标签页入口
 │   ├── app.js / app.css          # 既有扩展体验
@@ -43,6 +45,11 @@ Nova 是本地优先、可自部署的个人起始页，Web 使用 Vue 3 与 Vit
     ├── ARCHITECTURE.md
     └── data-model.json
 ```
+
+网页端不会把 ONNX WASM 运行时发布到 Cloudflare Pages：`background-removal-web.js`
+仅在用户点击智能去背时加载锁定的 ONNX Runtime Web 1.31.1 CDN 模块；模型仍按需从
+固定 Hugging Face revision 下载。扩展端继续由 `scripts/package-extension.mjs` 打包本地
+运行时，因此不依赖网络即可保留原有扩展去背能力。
 
 网页增强模块通过窄接口读取和保存既有应用状态，不接管网页账号认证或现有书签同步代码。模型迁移按卡片类型合并默认定义：旧卡片的用户 ID、顺序、开关和配置保留，新倒计时、纪念日、待办卡片以关闭状态加入组件库。扩展的独立同步器使用同一 Supabase Auth 与 `bookmark_sync` 表，不读取网页会话。
 

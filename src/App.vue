@@ -13,7 +13,9 @@ onMounted(async () => {
   await import('../shared/sync-merge.js')
   await import('../shared/assets.js')
   await import('../shared/dashboard.js')
-  window.NovaLoadBackgroundEngine = () => import('../shared/background-removal.js')
+  // Web builds load ONNX Runtime from the pinned CDN entry on demand. The
+  // extension has its own loader and continues to package the local runtime.
+  window.NovaLoadBackgroundEngine = () => import('../shared/background-removal-web.js')
   await import('../shared/feature-suite.js')
   await import('../shared/footer-toggle.js')
 })
